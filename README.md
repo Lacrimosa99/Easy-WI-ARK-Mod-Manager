@@ -17,7 +17,7 @@ Which functions are available?
 - Remove all ARK Mod IDs
 
 
-Which Script is for what?
+Which Script is what?
 
 For install, update or remove from Mod IDs, have i the ark_mod_downloader.sh written.
 Inside this script are all functions, what you are looking for.
