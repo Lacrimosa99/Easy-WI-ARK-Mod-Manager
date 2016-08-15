@@ -1,14 +1,5 @@
 #!/bin/bash
 
-# ToDo Liste:
-#
-# -> Namen
-#  -> Versionen aus Namen (normal / anzeige Namen)
-#
-# -> Variable aus Downloader
-#  -> source downloader
-#  -> downloader mit which finden
-
 # Webinterface User
 MASTERSERVER_USER="webinterface"
 
@@ -18,7 +9,7 @@ STEAM_PASSWD=""
 
 # E-Mail Modul
 # deactivate E-Mail Support with empty EMAIL_TO Field
-EMAIL_TO="lacrimosa99@devil-hunter-multigaming.de"
+EMAIL_TO="your_E-Mail_Adress_here"
 SUBJECT="ARK Mod-ID failure detected on $(hostname)"
 
 
