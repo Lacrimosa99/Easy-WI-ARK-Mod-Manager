@@ -26,10 +26,12 @@ Which Script is what?
 
 For install, update or remove from Mod IDs, have i the ark_mod_downloader.sh written.
 Inside this script are all functions, what you are looking for.
+
 Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
 
 ---
 
 How does the support work?
+
 I give only in Github Support. No Private or another way are supported!
 
