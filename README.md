@@ -2,10 +2,14 @@
 
 This is a ARK Mod / Content Manager for the www.Easy-WI.com Webinterface.
 
+---
+
 Requirements:
 - curl
 - wget
 - sudo
+
+---
 
 Which functions are available?
 
@@ -16,6 +20,7 @@ Which functions are available?
 - Remove a single ARK Mod ID
 - Remove all ARK Mod IDs
 
+---
 
 Which Script is what?
 
@@ -23,6 +28,7 @@ For install, update or remove from Mod IDs, have i the ark_mod_downloader.sh wri
 Inside this script are all functions, what you are looking for.
 Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
 
+---
 
 How does the support work?
 I give only in Github Support. No Private or another way are supported!
