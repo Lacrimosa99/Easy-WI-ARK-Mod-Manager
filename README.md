@@ -30,6 +30,16 @@ Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
 
 ---
 
+How works the Updater per Cronjob?
+
+Place the update module into the "root" directory.</br>
+Open your console (Putty/WinSCP or what you use) and paste this into:</br>
+echo "20 */1 * * * your_Directory/ark_mod_updater.sh >/dev/null 2>&1" >> /etc/cron.d/ark_mod_updater
+</br>
+Don't forget the crontab to be restarted after editing ('systemctl restart cron').
+
+---
+
 How does the support work?</br>
 I give only in Github Support. No Private or another way are supported!
 
