@@ -320,7 +320,7 @@ FINISHED() {
 		echo "IP: $(ip -4 -o addr show dev eth0 | awk '{split($4,a,"/") ;print a[1]}' | head -n1)"	>> "$EMAIL_MESSAGE"
 		echo >> "$EMAIL_MESSAGE"
 		cat "$DEPRECATED_LOG" >> "$EMAIL_MESSAGE"
-		cp "$DEPRECATED_LOG" "$DEPRECATED_LOG"_old
+		mv "$DEPRECATED_LOG" "$DEPRECATED_LOG"_old
 	fi
 
 	if [ ! "$EMAIL_TO" = "" ] && [ -f "$EMAIL_MESSAGE" ]; then
