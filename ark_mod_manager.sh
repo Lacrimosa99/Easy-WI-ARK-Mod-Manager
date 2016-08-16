@@ -10,7 +10,7 @@ MASTERSERVER_USER="webinterface"
 STEAM_USERNAME=""
 STEAM_PASSWD=""
 
-# Mod ID´s for Modus "Install all ModIDs"
+# Mod IDÂ´s for Modus "Install all ModIDs"
 # Following Mods will be install:
 # - K9 Custom Stacks Size
 # - Aku Shima
