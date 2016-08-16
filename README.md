@@ -11,7 +11,7 @@ Requirements:
 
 ---
 
-Which functions are available?
+Which functions are available in Ark Mod Manager?
 
 - Install a single ARK Mod ID
 - Install predefined ARK Mods (IDs are inside the "ark_mod_downloader.sh" Script)
@@ -24,7 +24,7 @@ Which functions are available?
 
 Which Script is what?
 
-For install, update or remove from Mod IDs, have i the ark_mod_downloader.sh written.
+For install, update or remove from Mod IDs, have i the ark_mod_manager.sh written.
 Inside this script are all functions, what you are looking for.</br>
 Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
 
