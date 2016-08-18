@@ -70,7 +70,6 @@ MENU() {
 	cyanMessage "####                Lacrimosa99                ####"
 	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
 	cyanMessage "####      www.Devil-Hunter-Multigaming.de      ####"
-	cyanMessage "####  lacrimosa99@devil-hunter-multigaming.de  ####"
 	cyanMessage "###################################################"
 	echo
 	whiteMessage "1  -  Install a certain ModID"
@@ -203,7 +202,6 @@ UPDATE() {
 			cp "$MOD_BACKUP_LOG" "$MOD_LOG"
 		fi
 		rm -rf "$TMP_PATH"/ark_mod_updater_status 2>&1 >/dev/null
-		CLEANFILES
 		FINISHED
 	fi
 }
@@ -634,6 +632,18 @@ FINISHED() {
 	if [ "$DEBUG" == "ON" ]; then
 		set +x
 	fi
+	cyanMessage "Thanks for using this script and have a nice Day."
+	echo
+	redMessage "###################################################"
+	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
+	greenMessage "####        ARK - Mod / Content Manager        ####"
+	yellowMessage "####               Version: $VERSION                ####"
+	whiteMessage "####                    by                     ####"
+	yellowMessage "####                Lacrimosa99                ####"
+	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
+	greenMessage "####      www.Devil-Hunter-Multigaming.de      ####"
+	redMessage "###################################################"
+	echo; echo
 	exit 0
 }
 
