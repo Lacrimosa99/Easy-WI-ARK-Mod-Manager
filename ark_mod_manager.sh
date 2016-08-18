@@ -62,15 +62,15 @@ USERCHECK() {
 MENU() {
 	clear
 	echo
-	redMessage "###################################################"
-	sleep 1; cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
-	sleep 1; greenMessage "####        ARK - Mod / Content Manager        ####"
-	sleep 1; yellowMessage "####               Version: $VERSION                ####"
-	sleep 1; whiteMessage "####                    by                     ####"
-	sleep 1; yellowMessage "####                Lacrimosa99                ####"
-	sleep 1; cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
-	sleep 1; greenMessage "####      www.Devil-Hunter-Multigaming.de      ####"
-	sleep 1; redMessage "###################################################"
+	cyanMessage "###################################################"
+	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
+	cyanMessage "####        ARK - Mod / Content Manager        ####"
+	cyanMessage "####               Version: $VERSION                ####"
+	cyanMessage "####                    by                     ####"
+	cyanMessage "####                Lacrimosa99                ####"
+	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
+	cyanMessage "####      www.Devil-Hunter-Multigaming.de      ####"
+	cyanMessage "###################################################"
 	echo
 	whiteMessage "1  -  Install a certain ModID"
 	whiteMessage "2  -  Install all ModIDs"
@@ -633,16 +633,16 @@ FINISHED() {
 		set +x
 	fi
 	cyanMessage "Thanks for using this script and have a nice Day."
-	sleep 1; echo
-	sleep 1; redMessage "###################################################"
-	sleep 1; cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
-	sleep 1; greenMessage "####        ARK - Mod / Content Manager        ####"
-	sleep 1; yellowMessage "####               Version: $VERSION                ####"
-	sleep 1; whiteMessage "####                    by                     ####"
-	sleep 1; yellowMessage "####                Lacrimosa99                ####"
-	sleep 1; cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
-	sleep 1; greenMessage "####      www.Devil-Hunter-Multigaming.de      ####"
-	sleep 1; redMessage "###################################################"
+	echo
+	cyanMessage "###################################################"
+	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
+	cyanMessage "####        ARK - Mod / Content Manager        ####"
+	cyanMessage "####               Version: $VERSION                ####"
+	cyanMessage "####                    by                     ####"
+	cyanMessage "####                Lacrimosa99                ####"
+	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
+	cyanMessage "####      www.Devil-Hunter-Multigaming.de      ####"
+	cyanMessage "###################################################"
 	echo; echo
 	exit 0
 }
