@@ -632,7 +632,7 @@ FINISHED() {
 	if [ "$DEBUG" == "ON" ]; then
 		set +x
 	fi
-	cyanMessage "Thanks for using this script and have a nice Day."
+	yellowMessage "Thanks for using this script and have a nice Day."
 	echo
 	cyanMessage "###################################################"
 	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
