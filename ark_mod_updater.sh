@@ -174,7 +174,7 @@ UPDATE() {
 						touch "$DEPRECATED_LOG"
 					fi
 					sed -i "/$MODID/d" "$MOD_BACKUP_LOG"
-					echo | tee -a "$INSTALL_LOG" "$DEPRECATED_LOG" "$EMAIL_MESSAGE"
+					echo | tee -a "$INSTALL_LOG" "$DEPRECATED_LOG"
 					echo "Mod $ARK_MOD_NAME_NORMAL with ModID "$MODID" are not more Supported and deactivated for Updater!" | tee -a "$INSTALL_LOG" "$DEPRECATED_LOG"
 					echo 'You can self deinstall from Disk over the "ark_mod_downloader.sh".' | tee -a "$INSTALL_LOG" "$DEPRECATED_LOG"
 				fi
@@ -314,7 +314,7 @@ FINISHED() {
 		cp "$MOD_BACKUP_LOG" "$MOD_LOG"
 	fi
 
-	if [ -f "$DEPRECATED_LOG" ]; then
+	if [ -f "$DEPRECATED_LOG" -a ! -f old_"$DEPRECATED_LOG" ]; then
 		echo "Date: $(date +%d.%m.%Y_%H:%M)" >> "$EMAIL_MESSAGE"
 		echo "Hostname: $(hostname)" >> "$EMAIL_MESSAGE"
 		echo "IP: $(ip -4 -o addr show dev eth0 | awk '{split($4,a,"/") ;print a[1]}' | head -n1)"	>> "$EMAIL_MESSAGE"
