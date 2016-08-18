@@ -1,6 +1,6 @@
 # Easy-WI ARK Mod / Content Manager
 
-This is a ARK Mod / Content Manager for the www.Easy-WI.com Webinterface.
+<h3>This is a ARK Mod / Content Manager for the www.Easy-WI.com Webinterface.</h3>
 
 ---
 
