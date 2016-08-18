@@ -4,14 +4,14 @@ This is a ARK Mod / Content Manager for the www.Easy-WI.com Webinterface.
 
 ---
 
-Requirements:
+<h4>Requirements:</h4>
 - curl
 - wget
 - sudo
 
 ---
 
-Which functions are available in Ark Mod Manager?
+<h4>Which functions are available in Ark Mod Manager?</h4>
 
 - Install a single ARK Mod ID
 - Install predefined ARK Mods (IDs are inside the "ark_mod_downloader.sh" Script)
@@ -22,7 +22,7 @@ Which functions are available in Ark Mod Manager?
 
 ---
 
-Which Script is what?
+<h4>Which Script is what?</h4>
 
 For install, update or remove from Mod IDs, have i the ark_mod_manager.sh written.
 Inside this script are all functions, what you are looking for.</br>
@@ -30,7 +30,7 @@ Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
 
 ---
 
-How works the Updater per Cronjob?
+<h4>How works the Updater per Cronjob?</h4>
 
 Place the update module into the "root" directory.</br>
 Open your console (Putty/WinSCP or what you use) and paste this into:</br>
@@ -40,6 +40,7 @@ Don't forget the crontab to be restarted after editing ('systemctl restart cron'
 
 ---
 
-How does the support work?</br>
+<h4>How does the support work?</h4>
+
 I give only in Github Support. No Private or another way are supported!
 
