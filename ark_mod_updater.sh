@@ -30,7 +30,7 @@ INSTALL_LOG=""$LOG_PATH"/ark_mod_update_status_$(date +"%d-%m-%Y").log"
 DEPRECATED_LOG=""$LOG_PATH"/ark_mod_deprecated_$(date +"%d-%m-%Y").log"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
 EMAIL_MESSAGE=""$TMP_PATH"/emailmessage.txt"
-DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old"
+DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued"
 
 USERCHECK() {
 	if [ -d "$ARK_MOD_PATH" ]; then
