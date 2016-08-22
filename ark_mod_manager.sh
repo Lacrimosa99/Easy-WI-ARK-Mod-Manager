@@ -36,7 +36,7 @@ LOG_PATH="/home/"$MASTERSERVER_USER"/logs"
 MOD_LOG=""$LOG_PATH"/ark_mod_id.log"
 MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
-DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old"
+DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued"
 
 USERCHECK() {
 	echo; echo
