@@ -171,6 +171,7 @@ UPDATE() {
 					echo 'You can self deinstall from Disk over the "ark_mod_manager.sh".' | tee -a "$INSTALL_LOG" "$DEPRECATED_LOG"
 				fi
 			else
+				echo >> "$INSTALL_LOG"
 				echo "Steam Community are currently not available or ModID $MODID not known!" >> "$INSTALL_LOG"
 				echo "Please try again later." >> "$INSTALL_LOG"
 			fi
