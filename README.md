@@ -11,9 +11,9 @@
 
 ---
 
-<h4>What must I edit befor its running?</h4>
+<h4>What must I edit befor it's running?</h4>
 
-Edit inside the two Scripts the masteruser, with your Webinterface User. 
+Edit inside the two Scripts the Masteruser with your Masterserver Webinterface User, who's you in installing has given.
 
 ---
 
