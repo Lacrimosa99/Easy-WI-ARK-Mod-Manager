@@ -14,6 +14,7 @@
 <h4>What must I edit befor it's running?</h4>
 
 Edit inside the two Scripts the Masteruser with your Masterserver Webinterface User, who's you in installing has given.
+Place the two Scripts inside your Root directory and give him following rights "chmod 700 ./ark_mod_updater.sh && chmod 700 ./ark_mod_manager.sh".
 
 ---
 
@@ -38,9 +39,8 @@ Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
 
 <h4>How works the Updater per Cronjob?</h4>
 
-Place the update module into the "root" directory.</br>
 Open your console (Putty/WinSCP or what you use) and paste this into:</br>
-echo "20 */1 * * * your_Directory/ark_mod_updater.sh >/dev/null 2>&1" >> /etc/cron.d/ark_mod_updater
+echo "20 */1 * * * /root/ark_mod_updater.sh >/dev/null 2>&1" >> /etc/cron.d/ark_mod_updater
 </br>
 Don't forget the crontab to be restarted after editing ('systemctl restart cron').
 
