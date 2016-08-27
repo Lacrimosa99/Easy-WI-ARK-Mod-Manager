@@ -11,6 +11,12 @@
 
 ---
 
+<h4>What must I edit befor its running?</h4>
+
+Edit inside the two Scripts the masteruser, with your Webinterface User. 
+
+---
+
 <h4>Which functions are available in Ark Mod Manager?</h4>
 
 - Install a single ARK Mod ID
