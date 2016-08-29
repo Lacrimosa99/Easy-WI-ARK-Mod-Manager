@@ -12,11 +12,11 @@ STEAM_PASSWD=""
 
 # Mod ID´s for Modus "Install all ModIDs"
 # Following Mods will be install:
-# - K9 Custom Stacks Size
-# - Aku Shima
-# - No Collision Structures
-# - Ark Reborn
-# - Admin Command Menu (ACM)
+# 525507438 - K9 Custom Stacks Size
+# 479295136 - Aku Shima
+# 632091170 - No Collision Structures
+# 485964701 - Ark Reborn
+# 558079412 - Admin Command Menu (ACM)
 ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 
 
@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-VERSION="2.0"
+VERSION="2.1"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -206,13 +206,35 @@ UPDATE() {
 	fi
 }
 
-#UPDATER_INSTALL() {
-#
-#}
+UPDATER_INSTALL() {
+	if [ ! -f /etc/cron.d/ark_mod_updater ]; then
+		echo '20 */1 * * * /root/ark_mod_updater.sh >/dev/null 2>&1' >> /etc/cron.d/ark_mod_updater
 
-#UPDATER_UNINSTALL() {
-#
-#}
+		if [ -f /etc/cron.d/ark_mod_updater ]; then
+			greenMessage "Updater Cron successfully installed."
+		else
+			redMessage "Updater Cron installation failed!"
+		fi
+	else
+		redMessage "Updater Cron allready installed."
+	fi
+}
+
+UPDATER_UNINSTALL() {
+	if [ -f /etc/cron.d/ark_mod_updater ]; then
+		rm -rf /etc/cron.d/ark_mod_updater
+
+		if [ ! /etc/cron.d/ark_mod_updater ]; then
+			greenMessage "Updater Cron successfully uninstalled."
+		else
+			redMessage "Updater Cron uninstalling failed!"
+			redMessage 'Delete "ark_mod_updater" in "/etc/cron.d/" by Hand.'
+		fi
+	else
+		redMessage 'No Updater Cron in "/etc/cron.d/" found!'
+		redMessage "Uninstalling canceled."
+	fi
+}
 
 UNINSTALL() {
 	echo; echo
