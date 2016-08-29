@@ -23,7 +23,8 @@ Place the two Scripts inside your Root directory and give him following rights "
 - Install a single ARK Mod ID
 - Install predefined ARK Mods (IDs are inside the "ark_mod_downloader.sh" Script)
 - Update all installed ARK Mods IDs
-- Update all installed ARK Mods automatically per Cronjob/Crontab (use for auto Update the "ark_mod_updater.sh" and Crontab)
+- Install Updater Script + Cronjob (for automatically Update) (in Progress)
+- Uninstall Updater Script + Crontab (in Progress)
 - Remove a single ARK Mod ID
 - Remove all ARK Mod IDs
 
