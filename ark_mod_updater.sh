@@ -329,8 +329,8 @@ FINISHED() {
 		rm -rf "$TMP_PATH"/ark_mod_id_tmp.log
 	fi
 
-	find "$LOG_PATH" -name "ark_mod_update*" -ctime 5 -exec rm -rf {} \;
-	find "$LOG_PATH" -name "ark_mod_deprecated*" -ctime 30 -exec rm -rf {} \;
+	find "$LOG_PATH" -name "ark_mod_update_*" -mtime +5 -exec rm -rf {} \;
+	find "$LOG_PATH" -name "ark_mod_deprecated_*" -mtime +30 -exec rm -rf {} \;
 	chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* 2>&1 >/dev/null
 
 	if [ -f "$TMP_PATH"/ark_mod_updater_status ]; then
