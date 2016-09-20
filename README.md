@@ -5,6 +5,7 @@
 ---
 
 <h4>Requirements:</h4>
+- Root User
 - curl
 - wget
 - sudo
