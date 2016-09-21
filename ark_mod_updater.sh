@@ -35,7 +35,11 @@ DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-l
 USERCHECK() {
 	if [ -d "$ARK_MOD_PATH" ]; then
 		if [ ! "$MASTERSERVER_USER" = "" ]; then
-			USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 27-)
+			if [ ! "$MASTERSERVER_USER" = "easy-wi" ]; then
+				USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 27-)
+			else
+				USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 22-)
+			fi
 			if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
 				echo >> "$INSTALL_LOG"
 				echo "User $MASTERSERVER_USER not found!" >> "$INSTALL_LOG"
