@@ -4,7 +4,7 @@
 DEBUG="OFF"
 
 # Easy-WI Masterserver User
-MASTERSERVER_USER="webinterface"
+MASTERSERVER_USER="easy-wi"
 
 # Steam Login Data
 STEAM_USERNAME=""
