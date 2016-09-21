@@ -15,7 +15,8 @@
 <h4>What must I edit befor it's running?</h4>
 
 Edit inside the two Scripts the Masteruser with your Masterserver Webinterface User, who's you in installing has given.
-Place the two Scripts inside your Root directory and give him following rights "chmod 700 ./ark_mod_updater.sh && chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh".
+Place the two Scripts inside your Root directory and copy following in your Terminal (Putty or what ever):
+chmod 700 ./ark_mod_updater.sh && chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
 
 ---
 
