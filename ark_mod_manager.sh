@@ -42,7 +42,11 @@ USERCHECK() {
 	echo; echo
 	if [ -d "$ARK_MOD_PATH" ]; then
 		if [ ! "$MASTERSERVER_USER" = "" ]; then
-			USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 22-)
+			if [ ! "$MASTERSERVER_USER" = "easy-wi" ]; then
+				USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 27-)
+			else
+				USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 22-)
+			fi
 			if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
 				redMessage "User $MASTERSERVER_USER not found!"
 				redMessage "Please check the Masteruser in this Script."
