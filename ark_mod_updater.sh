@@ -33,28 +33,20 @@ EMAIL_MESSAGE=""$TMP_PATH"/emailmessage.txt"
 DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued"
 
 USERCHECK() {
-	if [ -d "$ARK_MOD_PATH" ]; then
-		if [ ! "$MASTERSERVER_USER" = "" ]; then
-			if [ ! "$MASTERSERVER_USER" = "easy-wi" ]; then
-				USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 27-)
-			else
-				USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 22-)
-			fi
-			if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
-				echo >> "$INSTALL_LOG"
-				echo "User $MASTERSERVER_USER not found!" >> "$INSTALL_LOG"
-				echo "Please check the Masteruser in this Script." >> "$INSTALL_LOG"
-				FINISHED
-			fi
-		else
-			echo >> "$INSTALL_LOG"
-			echo 'Variable "MASTERSERVER_USER" are empty!' >> "$INSTALL_LOG"
+	echo; echo
+	if [ ! "$MASTERSERVER_USER" = "" ]; then
+		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER")
+		if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
+			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
+			redMessage "Please check the Masteruser inside this Script or the user shell rights."
+			FINISHED
+		fi
+		if [ ! -d "$ARK_MOD_PATH" ]; then
+			redMessage "masteraddons Directory not found!"
 			FINISHED
 		fi
 	else
-		echo >> "$INSTALL_LOG"
-		echo "Wrong Masterserver User!" >> "$INSTALL_LOG"
-		echo "Please change the Master User inside this Script." >> "$INSTALL_LOG"
+		redMessage 'Variable "MASTERSERVER_USER" are empty!'
 		FINISHED
 	fi
 }
