@@ -270,7 +270,7 @@ UNINSTALL() {
 			if [ ! "$TMP_NAME" = "" -o ! "$TMP_PATH" = "" ]; then
 				rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" 2>&1 >/dev/null
 				rm -rf "$EASYWI_XML_FILES"/"$TMP_NAME".xml 2>&1 >/dev/null
-				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG"
+				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG" 2>&1 >/dev/null
 				echo
 				greenMessage "ModID $ARK_MOD_ID is successfully uninstalled."
 				echo
