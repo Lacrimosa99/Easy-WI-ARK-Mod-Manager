@@ -5,6 +5,7 @@
 ---
 
 <h4>Requirements:</h4>
+- Debian 8 or higher, Ubuntu 16 or higher
 - Root User
 - curl
 - wget
@@ -44,8 +45,6 @@ Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
 
 Open your console (Putty/WinSCP or what you use) and paste this into:</br>
 echo "20 */1 * * * /root/ark_mod_updater.sh >/dev/null 2>&1" >> /etc/cron.d/ark_mod_updater && service cron restart
-</br>
-Don't forget the crontab to be restarted after editing ('systemctl restart cron').
 
 ---
 
