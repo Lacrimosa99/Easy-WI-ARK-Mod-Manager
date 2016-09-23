@@ -37,16 +37,16 @@ USERCHECK() {
 	if [ ! "$MASTERSERVER_USER" = "" ]; then
 		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER")
 		if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
-			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
-			redMessage "Please check the Masteruser inside this Script or the user shell rights."
+			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!" >> "$INSTALL_LOG"
+			redMessage "Please check the Masteruser inside this Script or the user shell rights." >> "$INSTALL_LOG"
 			FINISHED
 		fi
 		if [ ! -d "$ARK_MOD_PATH" ]; then
-			redMessage "masteraddons Directory not found!"
+			redMessage "masteraddons Directory not found!" >> "$INSTALL_LOG"
 			FINISHED
 		fi
 	else
-		redMessage 'Variable "MASTERSERVER_USER" are empty!'
+		redMessage 'Variable "MASTERSERVER_USER" are empty!' >> "$INSTALL_LOG"
 		FINISHED
 	fi
 }
