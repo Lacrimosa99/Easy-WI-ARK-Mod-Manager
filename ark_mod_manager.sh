@@ -40,25 +40,19 @@ DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-l
 
 USERCHECK() {
 	echo; echo
-	if [ -d "$ARK_MOD_PATH" ]; then
-		if [ ! "$MASTERSERVER_USER" = "" ]; then
-			if [ ! "$MASTERSERVER_USER" = "easy-wi" ]; then
-				USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 27-)
-			else
-				USER_CHECK=$(cat /etc/passwd | grep "$MASTERSERVER_USER" | cut -c 22-)
-			fi
-			if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
-				redMessage "User $MASTERSERVER_USER not found!"
-				redMessage "Please check the Masteruser in this Script."
-				FINISHED
-			fi
-		else
-			redMessage 'Variable "MASTERSERVER_USER" are empty!'
+	if [ ! "$MASTERSERVER_USER" = "" ]; then
+		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER")
+		if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
+			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
+			redMessage "Please check the Masteruser inside this Script or the user shell rights."
+			FINISHED
+		fi
+		if [ ! -d "$ARK_MOD_PATH" ]; then
+			redMessage "masteraddons Directory not found!"
 			FINISHED
 		fi
 	else
-		redMessage "Wrong Masterserver User!"
-		redMessage "Please change the Masterserver User inside this Script."
+		redMessage 'Variable "MASTERSERVER_USER" are empty!'
 		FINISHED
 	fi
 }
