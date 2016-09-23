@@ -45,6 +45,10 @@ USERCHECK() {
 			redMessage "masteraddons Directory not found!" >> "$INSTALL_LOG"
 			FINISHED
 		fi
+		if [ ! -f "$STEAM_CMD_PATH" ]; then
+			redMessage "Steam installation not found!" >> "$INSTALL_LOG"
+			FINISHED
+		fi
 	else
 		redMessage 'Variable "MASTERSERVER_USER" are empty!' >> "$INSTALL_LOG"
 		FINISHED
