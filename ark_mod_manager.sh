@@ -51,6 +51,10 @@ USERCHECK() {
 			redMessage "masteraddons Directory not found!"
 			FINISHED
 		fi
+		if [ ! -f "$STEAM_CMD_PATH" ]; then
+			redMessage "Steam installation not found!"
+			FINISHED
+		fi
 	else
 		redMessage 'Variable "MASTERSERVER_USER" are empty!'
 		FINISHED
@@ -418,7 +422,7 @@ MOD_DOWNLOAD() {
 				redMessage "FAILURE"
 				cyanonelineMessage "Connection Attempts:   "; whiteMessage "$COUNTER"
 				rm -rf "$MOD_LOG"
-				cp "$MOD_BACKUP_LOG" "$MOD_LOG"
+				cp "$MOD_BACKUP_LOG" "$MOD_LOG" >/dev/null 2>&1
 				if [ -f "$TMP_PATH"/ark_mod_updater_status ]; then
 					rm -rf "$TMP_PATH"/ark_mod_updater_status
 				fi
