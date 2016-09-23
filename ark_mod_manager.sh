@@ -624,7 +624,7 @@ QUESTION4() {
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
-			sed -i "/$MODID/d" "$MOD_BACKUP_LOG"
+			sed -i "/$MODID/d" "$MOD_BACKUP_LOG" 2>&1 >/dev/null
 			rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" 2>&1 >/dev/null;;
 		n|N)
 			continue;;
