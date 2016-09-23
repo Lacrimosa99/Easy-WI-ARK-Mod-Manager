@@ -48,6 +48,7 @@ VERSION_CHECK() {
 		FINISHED
 	else
 		greenMessage "You are using the up to date version ${CURRENT_VERSION}"
+		sleep 3
 	fi
 }
 
