@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-VERSION="2.1"
+CURRENT_VERSION="2.2"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -38,7 +38,20 @@ MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
 DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued"
 
-USERCHECK() {
+VERSION_CHECK() {
+	echo; echo
+	yellowMessage "Checking for the latest installer Script"
+	LATEST_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
+
+	if [ "`printf "${LATEST_VERSION}\n${CURRENT_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_VERSION" ]; then
+		redMessage "You are using the old version ${CURRENT_VERSION}. Please upgrade to version ${LATEST_VERSION} and retry."
+		FINISHED
+	else
+		greenMessage "You are using the up to date version ${CURRENT_VERSION}"
+	fi
+}
+
+USER_CHECK() {
 	echo; echo
 	if [ ! "$MASTERSERVER_USER" = "" ]; then
 		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER")
@@ -67,7 +80,7 @@ MENU() {
 	cyanMessage "###################################################"
 	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
 	cyanMessage "####        ARK - Mod / Content Manager        ####"
-	cyanMessage "####               Version: $VERSION                ####"
+	cyanMessage "####               Version: $CURRENT_VERSION                ####"
 	cyanMessage "####                    by                     ####"
 	cyanMessage "####                Lacrimosa99                ####"
 	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
@@ -661,7 +674,7 @@ FINISHED() {
 	cyanMessage "###################################################"
 	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
 	cyanMessage "####        ARK - Mod / Content Manager        ####"
-	cyanMessage "####               Version: $VERSION                ####"
+	cyanMessage "####               Version: $CURRENT_VERSION                ####"
 	cyanMessage "####                    by                     ####"
 	cyanMessage "####                Lacrimosa99                ####"
 	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
@@ -722,5 +735,6 @@ if [ $? != "0" ]; then
 	fi
 fi
 
-USERCHECK
+VERSION_CHECK
+USER_CHECK
 MENU
