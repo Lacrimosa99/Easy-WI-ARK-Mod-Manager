@@ -9,7 +9,7 @@ STEAM_PASSWD=""
 
 # E-Mail Modul
 # deactivate E-Mail Support with empty EMAIL_TO Field
-EMAIL_TO="your_E-Mail_Adress_here"
+EMAIL_TO=""
 SUBJECT="ARK Mod-ID failure detected on $(hostname)"
 
 
