@@ -13,14 +13,6 @@
 
 ---
 
-<h4>What must I edit befor it's running?</h4>
-
-Edit inside the two Scripts the Masteruser with your Masterserver Webinterface User, who's you in installing has given.
-Place the two Scripts inside your Root directory and copy following in your Terminal (Putty or what ever):
-chmod 700 ./ark_mod_updater.sh && chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
-
----
-
 <h4>Which functions are available in Ark Mod Manager?</h4>
 
 - Install a single ARK Mod ID
@@ -41,10 +33,21 @@ Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
 
 ---
 
+<h4>What must I edit befor it's running?</h4>
+
+Edit inside the two Scripts the Masteruser with your Masterserver Webinterface User, who's you in installing has given.
+Place the two Scripts inside your Root directory and copy following in your Terminal (Putty or what ever):
+chmod 700 ./ark_mod_updater.sh && chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
+
+Inside the Updater Script have you the Option, to retrive an E-Mail on Failure.
+Change the E-Mail Field to your E-Mail Address to activate this Option.
+
+---
+
 <h4>How works the Updater per Cronjob?</h4>
 
 Open your console (Putty/WinSCP or what you use) and paste this into:</br>
-echo "20 */1 * * * /root/ark_mod_updater.sh >/dev/null 2>&1" >> /etc/cron.d/ark_mod_updater && service cron restart
+echo "30 1 * * * /root/ark_mod_updater.sh >/dev/null 2>&1" >> /etc/cron.d/ark_mod_updater && service cron restart
 
 ---
 
