@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_VERSION="2.2"
+CURRENT_VERSION="2.3"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -37,6 +37,12 @@ MOD_LOG=""$LOG_PATH"/ark_mod_id.log"
 MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
 DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued"
+
+PRE_CHECK() {
+	VERSION_CHECK
+	USER_CHECK
+	MENU
+}
 
 VERSION_CHECK() {
 	echo; echo
@@ -737,6 +743,4 @@ if [ $? != "0" ]; then
 	fi
 fi
 
-VERSION_CHECK
-USER_CHECK
-MENU
+PRE_CHECK
