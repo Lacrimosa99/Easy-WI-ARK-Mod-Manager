@@ -230,7 +230,7 @@ UPDATE() {
 
 UPDATER_INSTALL() {
 	if [ ! -f /etc/cron.d/ark_mod_updater ]; then
-		echo '20 */1 * * * /root/ark_mod_updater.sh >/dev/null 2>&1' >> /etc/cron.d/ark_mod_updater
+		echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' >> /etc/cron.d/ark_mod_updater
 
 		if [ -f /etc/cron.d/ark_mod_updater ]; then
 			greenMessage "Updater Cron successfully installed."
@@ -238,7 +238,7 @@ UPDATER_INSTALL() {
 			redMessage "Updater Cron installation failed!"
 		fi
 	else
-		redMessage "Updater Cron allready installed."
+		redMessage "Updater Cron already installed."
 	fi
 }
 
@@ -332,14 +332,6 @@ UNINSTALL_ALL() {
 		FINISHED
 	fi
 }
-
-#v[1-9].[1-9][1-9].[1-9]
-#v[1-9][1-9].[1-9][1-9].[1-9][1-9].[1-9][1-9]
-#V [1-9].[1-9] Alpha
-#v[1-9][1-9][1-9]
-#(Updated!)
-#[1-9].[1-9]
-# \\ -> " "
 
 MOD_NAME_CHECK() {
 	ARK_MOD_NAME_NORMAL=$(curl -s "http://steamcommunity.com/sharedfiles/filedetails/?id=$MODID" | sed -n 's|^.*<div class="workshopItemTitle">\([^<]*\)</div>.*|\1|p')
