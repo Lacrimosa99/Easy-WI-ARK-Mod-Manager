@@ -253,7 +253,7 @@ UPDATER_UNINSTALL() {
 	if [ -f /etc/cron.d/ark_mod_updater ]; then
 		rm -rf /etc/cron.d/ark_mod_updater
 
-		if [ ! /etc/cron.d/ark_mod_updater ]; then
+		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
 			greenMessage "Updater Cron successfully uninstalled."
 		else
 			redMessage "Updater Cron uninstalling failed!"
@@ -261,6 +261,20 @@ UPDATER_UNINSTALL() {
 		fi
 	else
 		redMessage 'No Updater Cron in "/etc/cron.d/" found!'
+		redMessage "Uninstalling canceled."
+	fi
+
+	if [ -f /root/ark_mod_updater.sh ]; then
+		rm -rf /root/ark_mod_updater.sh
+
+		if [ ! -f /root/ark_mod_updater.sh ]; then
+			greenMessage " Updater successfully uninstalled."
+		else
+			redMessage "Updater uninstalling failed!"
+			redMessage 'Delete "ark_mod_updater.sh" in "/root/" by Hand.'
+		fi
+	else
+		redMessage 'No Updater in "/root/" found!'
 		redMessage "Uninstalling canceled."
 	fi
 }
