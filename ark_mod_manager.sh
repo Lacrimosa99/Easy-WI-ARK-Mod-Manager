@@ -230,7 +230,7 @@ UPDATE() {
 
 UPDATER_INSTALL() {
 	if [ ! -f /etc/cron.d/ark_mod_updater ]; then
-		echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' >> /etc/cron.d/ark_mod_updater
+		echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' > /etc/cron.d/ark_mod_updater
 
 		if [ -f /etc/cron.d/ark_mod_updater ]; then
 			greenMessage "Updater Cron successfully installed."
@@ -239,6 +239,12 @@ UPDATER_INSTALL() {
 		fi
 	else
 		redMessage "Updater Cron already installed."
+	fi
+
+	if [ ! -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
+
+	else
+		redMessage "Updater installation failed!"
 	fi
 }
 
