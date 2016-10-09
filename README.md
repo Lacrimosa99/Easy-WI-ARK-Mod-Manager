@@ -47,7 +47,7 @@ Change the E-Mail Field to your E-Mail Address to activate this Option.
 <h4>How works the Updater per Cronjob?</h4>
 
 Open your console (Putty/WinSCP or what you use) and paste this into:</br>
-echo "30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1" >> /etc/cron.d/ark_mod_updater && service cron restart
+echo "30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1" > /etc/cron.d/ark_mod_updater && service cron restart
 
 ---
 
