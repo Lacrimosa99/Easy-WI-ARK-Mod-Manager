@@ -27,8 +27,8 @@
 
 <h4>What it's to do?</h4>
 
-Download only the Ark Mod Manager (ark_mod_manager.sh) into your Root Directory.
-Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.
+Download only the Ark Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
+Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.<br>
 Copy following Command in your Terminal (Putty or what ever):
 chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
 
@@ -36,13 +36,14 @@ chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
 
 <h4>How works the Updater per Cronjob?</h4>
 
-Open the Ark Mod Manager (ark_mod_manager.sh) in your Terminal and use follwings Option "Install Updater Script + Cronjob".
-You must nothing more do.. all required Commands and Scripts are automatically installed.
-Every Night at 1:30 Hour (European Time) run the Updater Script and Update all installed Mods.
+Open the Ark Mod Manager (ark_mod_manager.sh) in your Terminal and use follwings Option "Install Updater Script + Cronjob".<br>
+You must nothing more do.. all required Commands and Scripts are automatically installed.<br>
+Every Night at 1:30 Hour (European Time) run the Updater Script and Update all installed Mods.<br>
 
 ---
 
 <h4>How does the support work?</h4>
 
-I give only in Github Support. No Private or another way are supported!
+I give only in Github Support.<br>
+No Private or another way are supported!
 
