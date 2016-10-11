@@ -7,8 +7,13 @@ DEBUG="OFF"
 MASTERSERVER_USER="easy-wi"
 
 # Steam Login Data
+# Leave empty to use User "anonymous"
 STEAM_USERNAME=""
 STEAM_PASSWD=""
+
+# E-Mail Modul
+# deactivate E-Mail Support with empty EMAIL_TO Field
+EMAIL_TO=""
 
 # Mod ID´s for Modus "Install all ModIDs"
 # Following Mods will be install:
