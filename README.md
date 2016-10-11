@@ -36,7 +36,7 @@ chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
 
 <h4>How works the Updater per Cronjob?</h4>
 
-Open the Ark Mod Manager (ark_mod_manager.sh) in your Terminal and use follwings Option "Install Updater Script + Cronjob".<br>
+Open the Ark Mod Manager (ark_mod_manager.sh) in your Terminal and use following Option "Install Updater Script + Cronjob".<br>
 You must nothing more do.. all required Commands and Scripts are automatically installed.<br>
 Every Night at 1:30 Hour (European Time) run the Updater Script and Update all installed Mods.<br>
 
