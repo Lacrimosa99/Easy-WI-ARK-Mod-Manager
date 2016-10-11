@@ -241,7 +241,8 @@ UPDATER_INSTALL() {
 			echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' > /etc/cron.d/ark_mod_updater
 
 			if [ -f /etc/cron.d/ark_mod_updater ]; then
-				systemctl daemon-reload >/dev/null 2>&1 && service cron restart >/dev/null 2>&1
+				systemctl daemon-reload >/dev/null 2>&1
+				service cron restart >/dev/null 2>&1
 				greenMessage "Updater Cron successfully installed."
 				sleep 3
 				echo
