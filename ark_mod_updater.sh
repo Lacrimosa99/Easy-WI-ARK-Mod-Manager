@@ -5,12 +5,12 @@ MASTERSERVER_USER="unknown_user"
 
 # Steam Login Data
 # empty Field to use anonymous User
-STEAM_USERNAME=""
-STEAM_PASSWD=""
+STEAM_USERNAME=
+STEAM_PASSWD=
 
 # E-Mail Modul
 # deactivate E-Mail Support with empty EMAIL_TO Field
-EMAIL_TO=""
+EMAIL_TO=
 SUBJECT="ARK Mod-ID failure detected on $(hostname)"
 
 
