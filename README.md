@@ -18,36 +18,27 @@
 - Install a single ARK Mod ID
 - Install predefined ARK Mods (IDs are inside the "ark_mod_downloader.sh" Script)
 - Update all installed ARK Mods IDs
-- Install Updater Script + Cronjob (for automatically Update) (in Progress)
-- Uninstall Updater Script + Crontab (in Progress)
+- Install Updater Script + Cronjob (for automatically Update)
+- Uninstall Updater Script + Crontab
 - Remove a single ARK Mod ID
 - Remove all ARK Mod IDs
 
 ---
 
-<h4>Which Script is what?</h4>
+<h4>What it's to do?</h4>
 
-For install, update or remove from Mod IDs, have i the ark_mod_manager.sh written.
-Inside this script are all functions, what you are looking for.</br>
-Only for Update per Cronjob/Crontab have i the ark_mod_updater.sh written.
-
----
-
-<h4>What must I edit befor it's running?</h4>
-
-Edit inside the two Scripts the Masteruser with your Masterserver Webinterface User, who's you in installing has given.
-Place the two Scripts inside your Root directory and copy following in your Terminal (Putty or what ever):
-chmod 700 ./ark_mod_updater.sh && chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
-
-Inside the Updater Script have you the Option, to retrive an E-Mail on Failure.
-Change the E-Mail Field to your E-Mail Address to activate this Option.
+Download only the Ark Mod Manager (ark_mod_manager.sh) into your Root Directory.
+Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.
+Copy following Command in your Terminal (Putty or what ever):
+chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
 
 ---
 
 <h4>How works the Updater per Cronjob?</h4>
 
-Open your console (Putty/WinSCP or what you use) and paste this into:</br>
-echo "30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1" > /etc/cron.d/ark_mod_updater && service cron restart
+Open the Ark Mod Manager (ark_mod_manager.sh) in your Terminal and use follwings Option "Install Updater Script + Cronjob".
+You must nothing more do.. all required Commands and Scripts are automatically installed.
+Every Night at 1:30 Hour (European Time) run the Updater Script and Update all installed Mods.
 
 ---
 
