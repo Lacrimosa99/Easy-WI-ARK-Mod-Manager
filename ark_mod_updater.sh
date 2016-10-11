@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Webinterface User
-MASTERSERVER_USER="easy-wi"
+MASTERSERVER_USER="unknown_user"
 
 # Steam Login Data
+# empty Field to use anonymous User
 STEAM_USERNAME=""
 STEAM_PASSWD=""
 
