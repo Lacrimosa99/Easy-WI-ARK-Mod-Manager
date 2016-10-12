@@ -248,6 +248,22 @@ UPDATER_INSTALL() {
 			echo
 		fi
 
+		yellowMessage "Downloading current Updater Script from Github"
+		yellowMessage "Please wait..."
+		wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
+		chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+
+		sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+
+		if [ ! "$STEAM_USERNAME" = "" ] && [ ! "$STEAM_PASSWD" = "" ]; then
+			sed -i "s/STEAM_USERNAME=/STEAM_USERNAME=\"$STEAM_USERNAME\"/" /root/ark_mod_updater.sh
+			sed -i "s/STEAM_PASSWD=/STEAM_PASSWD=\"$STEAM_PASSWD\"/" /root/ark_mod_updater.sh
+		fi
+
+		if [ ! "$EMAIL_TO" = "" ]; then
+			sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+		fi
+
 		yellowMessage "Check, is Cronjob already installed."
 		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
 			echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' > /etc/cron.d/ark_mod_updater
@@ -266,21 +282,6 @@ UPDATER_INSTALL() {
 			greenMessage "Updater Cron already installed."
 			sleep 3
 			echo
-		fi
-
-		yellowMessage "Downloading current Updater Script from Github"
-		wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
-		chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
-
-		sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
-
-		if [ ! "$STEAM_USERNAME" = "" ] && [ ! "$STEAM_PASSWD" = "" ]; then
-			sed -i "s/STEAM_USERNAME=/STEAM_USERNAME=\"$STEAM_USERNAME\"/" /root/ark_mod_updater.sh
-			sed -i "s/STEAM_PASSWD=/STEAM_PASSWD=\"$STEAM_PASSWD\"/" /root/ark_mod_updater.sh
-		fi
-
-		if [ ! "$EMAIL_TO" = "" ]; then
-			sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
 		fi
 
 		if [ -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
