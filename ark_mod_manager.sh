@@ -320,16 +320,16 @@ UPDATER_UNINSTALL() {
 
 		if [ ! -f /root/ark_mod_updater.sh ]; then
 			greenMessage "Updater successfully uninstalled."
-			echo
+			FINISHED
 		else
 			redMessage "Updater uninstalling failed!"
 			redMessage 'Delete "ark_mod_updater.sh" in "/root/" by Hand.'
-			echo
+			FINISHED
 		fi
 	else
 		redMessage 'No Updater in "/root/" found!'
 		redMessage "Uninstalling canceled."
-		echo
+		FINISHED
 	fi
 }
 
