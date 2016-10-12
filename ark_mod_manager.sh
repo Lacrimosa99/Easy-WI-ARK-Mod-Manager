@@ -289,7 +289,8 @@ UPDATER_INSTALL() {
 		fi
 
 		if [ -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
-			greenMessage "Updater successfully installed."
+			screen -AmdS ARK_Updater "/root/ark_mod_updater.sh"
+			greenMessage "Updater successfully installed and run for the first time in background."
 		else
 			redMessage "Updater installation failed!"
 			redMessage "Cron and Updater will be removed!"
