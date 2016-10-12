@@ -309,10 +309,10 @@ UPDATER_UNINSTALL() {
 		else
 			redMessage "Updater Cron uninstalling failed!"
 			redMessage 'Delete "ark_mod_updater" in "/etc/cron.d/" by Hand.'
+			echo
 		fi
 	else
 		redMessage 'No Updater Cron in "/etc/cron.d/" found!'
-		redMessage "Uninstalling canceled."
 	fi
 
 	if [ -f /root/ark_mod_updater.sh ]; then
