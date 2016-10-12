@@ -236,6 +236,18 @@ UPDATE() {
 UPDATER_INSTALL() {
 	echo; echo
 	if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
+		yellowMessage "Check, is a old Updater Script installed."
+		if [ -f /root/ark_mod_updater.sh ]; then
+			rm -rf /root/ark_mod_updater.sh
+			redMessage "old Updater Script found and removed."
+			sleep 3
+			echo
+		else
+			greenMessage "No old Script found."
+			sleep 3
+			echo
+		fi
+
 		yellowMessage "Check, is Cronjob already installed."
 		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
 			echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' > /etc/cron.d/ark_mod_updater
@@ -256,35 +268,22 @@ UPDATER_INSTALL() {
 			echo
 		fi
 
-		yellowMessage "Check, is a old Updater Script installed."
-		if [ -f /root/ark_mod_updater.sh ]; then
-			rm -rf /root/ark_mod_updater.sh
-			redMessage "old Updater Script found and removed."
-			sleep 3
-			echo
-		else
-			greenMessage "No old Script found."
-			sleep 3
-			echo
+		yellowMessage "Downloading current Updater Script from Github"
+		wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
+		chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+
+		sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+
+		if [ ! "$STEAM_USERNAME" = "" ] && [ ! "$STEAM_PASSWD" = "" ]; then
+			sed -i "s/STEAM_USERNAME=/STEAM_USERNAME=\"$STEAM_USERNAME\"/" /root/ark_mod_updater.sh
+			sed -i "s/STEAM_PASSWD=/STEAM_PASSWD=\"$STEAM_PASSWD\"/" /root/ark_mod_updater.sh
 		fi
 
-		if [ ! -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
-			yellowMessage "Downloading current Updater Script from Github"
+		if [ ! "$EMAIL_TO" = "" ]; then
+			sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+		fi
 
-			wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI-ARK-Mod-Manager/master/ark_mod_updater.sh >/dev/null 2>&1
-			chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
-
-			sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
-
-			if [ ! "$STEAM_USERNAME" = "" ] && [ ! "$STEAM_PASSWD" = "" ]; then
-				sed -i "s/STEAM_USERNAME=/STEAM_USERNAME=\"$STEAM_USERNAME\"/" /root/ark_mod_updater.sh
-				sed -i "s/STEAM_PASSWD=/STEAM_PASSWD=\"$STEAM_PASSWD\"/" /root/ark_mod_updater.sh
-			fi
-
-			if [ ! "$EMAIL_TO" = "" ]; then
-				sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
-			fi
-
+		if [ -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
 			greenMessage "Updater successfully installed."
 		else
 			redMessage "Updater installation failed!"
