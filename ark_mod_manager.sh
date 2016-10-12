@@ -264,6 +264,7 @@ UPDATER_INSTALL() {
 		if [ ! "$EMAIL_TO" = "" ]; then
 			sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
 		fi
+		sleep 3
 		greenMessage "Done."
 		echo
 
