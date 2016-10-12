@@ -55,7 +55,8 @@ VERSION_CHECK() {
 	LATEST_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
 
 	if [ "`printf "${LATEST_VERSION}\n${CURRENT_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_VERSION" ]; then
-		redMessage "You are using the old version ${CURRENT_VERSION}. Please upgrade to version ${LATEST_VERSION} and retry."
+		redMessage "You are using the old script version ${CURRENT_VERSION}."
+		redMessage "Please upgrade to version ${LATEST_VERSION} and retry."
 		FINISHED
 	else
 		greenMessage "You are using the up to date version ${CURRENT_VERSION}"
