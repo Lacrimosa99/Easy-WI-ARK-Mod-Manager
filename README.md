@@ -5,7 +5,7 @@
 ---
 
 <h4>Requirements:</h4>
-- Debian 8 or higher, Ubuntu 16 or higher
+- Debian or Ubuntu (tested)
 - Root User
 - curl
 - wget
