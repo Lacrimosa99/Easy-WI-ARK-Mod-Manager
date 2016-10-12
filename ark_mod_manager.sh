@@ -264,6 +264,8 @@ UPDATER_INSTALL() {
 		if [ ! "$EMAIL_TO" = "" ]; then
 			sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
 		fi
+		greenMessage "Done."
+		echo
 
 		yellowMessage "Check, is Cronjob already installed."
 		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
