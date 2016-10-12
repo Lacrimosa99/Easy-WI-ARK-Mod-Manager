@@ -29,7 +29,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_VERSION="2.5"
+CURRENT_VERSION="2.5.1"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -237,65 +237,71 @@ UPDATE() {
 UPDATER_INSTALL() {
 	echo; echo
 	if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
-		yellowMessage "Check, is a old Updater Script installed."
-		if [ -f /root/ark_mod_updater.sh ]; then
-			rm -rf /root/ark_mod_updater.sh
-			redMessage "old Updater Script found and removed."
-			sleep 3
-			echo
-		else
-			greenMessage "No old Script found."
-			sleep 3
-			echo
-		fi
-
-		yellowMessage "Downloading current Updater Script from Github"
-		yellowMessage "Please wait..."
-		wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
-		chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
-
-		sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
-
-		if [ ! "$STEAM_USERNAME" = "" ] && [ ! "$STEAM_PASSWD" = "" ]; then
-			sed -i "s/STEAM_USERNAME=/STEAM_USERNAME=\"$STEAM_USERNAME\"/" /root/ark_mod_updater.sh
-			sed -i "s/STEAM_PASSWD=/STEAM_PASSWD=\"$STEAM_PASSWD\"/" /root/ark_mod_updater.sh
-		fi
-
-		if [ ! "$EMAIL_TO" = "" ]; then
-			sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
-		fi
-		sleep 3
-		greenMessage "Done."
-		echo
-
-		yellowMessage "Check, is Cronjob already installed."
-		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
-			echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' > /etc/cron.d/ark_mod_updater
-
-			if [ -f /etc/cron.d/ark_mod_updater ]; then
-				systemctl daemon-reload >/dev/null 2>&1
-				service cron restart >/dev/null 2>&1
-				greenMessage "Updater Cron successfully installed."
+		SCREEN_CHECK="screen -list | grep ARK_Update"
+		if [ "$SCREEN_CHECK" = "" ] || [ ! -f "$TMP_PATH"/ark_mod_updater_status ] ; then
+			yellowMessage "Check, is a old Updater Script installed."
+			if [ -f /root/ark_mod_updater.sh ]; then
+				rm -rf /root/ark_mod_updater.sh
+				redMessage "old Updater Script found and removed."
 				sleep 3
 				echo
 			else
-				redMessage "Updater Cron installation failed!"
-				FINISHED
+				greenMessage "No old Script found."
+				sleep 3
+				echo
+			fi
+
+			yellowMessage "Downloading current Updater Script from Github"
+			yellowMessage "Please wait..."
+			wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
+			chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+
+			sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+
+			if [ ! "$STEAM_USERNAME" = "" ] && [ ! "$STEAM_PASSWD" = "" ]; then
+				sed -i "s/STEAM_USERNAME=/STEAM_USERNAME=\"$STEAM_USERNAME\"/" /root/ark_mod_updater.sh
+				sed -i "s/STEAM_PASSWD=/STEAM_PASSWD=\"$STEAM_PASSWD\"/" /root/ark_mod_updater.sh
+			fi
+
+			if [ ! "$EMAIL_TO" = "" ]; then
+				sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+			fi
+			sleep 3
+			greenMessage "Done."
+			echo
+
+			yellowMessage "Check, is Cronjob already installed."
+			if [ ! -f /etc/cron.d/ark_mod_updater ]; then
+				echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' > /etc/cron.d/ark_mod_updater
+
+				if [ -f /etc/cron.d/ark_mod_updater ]; then
+					systemctl daemon-reload >/dev/null 2>&1
+					service cron restart >/dev/null 2>&1
+					greenMessage "Updater Cron successfully installed."
+					sleep 3
+					echo
+				else
+					redMessage "Updater Cron installation failed!"
+					FINISHED
+				fi
+			else
+				greenMessage "Updater Cron already installed."
+				sleep 3
+				echo
+			fi
+
+			if [ -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
+				screen -AmdS ARK_Updater "/root/ark_mod_updater.sh"
+				greenMessage "Updater successfully installed and run for the first time in background."
+			else
+				redMessage "Updater installation failed!"
+				redMessage "Cron and Updater will be removed!"
+				sleep 3
+				UPDATER_UNINSTALL
 			fi
 		else
-			greenMessage "Updater Cron already installed."
-			sleep 3
-			echo
-		fi
-
-		if [ -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
-			screen -AmdS ARK_Updater "/root/ark_mod_updater.sh"
-			greenMessage "Updater successfully installed and run for the first time in background."
-		else
-			redMessage "Updater installation failed!"
-			redMessage "Cron and Updater will be removed!"
-			sleep 3
-			UPDATER_UNINSTALL
+			redMessage "A old Updater is currently running... please try again later."
+			tput cnorm; echo; echo; exit
 		fi
 	else
 		redMessage "Please install a Mod first, before you install the Updater!"
