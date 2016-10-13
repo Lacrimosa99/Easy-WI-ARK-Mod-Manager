@@ -6,11 +6,6 @@ DEBUG="OFF"
 # Easy-WI Masterserver User
 MASTERSERVER_USER="easy-wi"
 
-# Steam Login Data
-# Leave empty to use User "anonymous"
-STEAM_USERNAME=""
-STEAM_PASSWD=""
-
 # E-Mail Modul
 # deactivate E-Mail Support with empty EMAIL_TO Field
 EMAIL_TO=""
@@ -29,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_VERSION="2.5.1"
+CURRENT_VERSION="2.5.2"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -89,17 +84,7 @@ USER_CHECK() {
 
 MENU() {
 	clear
-	echo
-	cyanMessage "###################################################"
-	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
-	cyanMessage "####        ARK - Mod / Content Manager        ####"
-	cyanMessage "####               Version: $CURRENT_VERSION                ####"
-	cyanMessage "####                    by                     ####"
-	cyanMessage "####                Lacrimosa99                ####"
-	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
-	cyanMessage "####      www.Devil-Hunter-Multigaming.de      ####"
-	cyanMessage "###################################################"
-	echo
+	HEADER
 	whiteMessage "1  -  Install a certain ModID"
 	whiteMessage "2  -  Install all ModIDs"
 	whiteMessage "3  -  Install Updater Script and Cronjob"
@@ -176,6 +161,7 @@ INSTALL() {
 
 INSTALL_ALL() {
 	echo; echo
+	yellowMessage "Please wait..."
 	if [ ! -f "$MOD_LOG" ]; then
 		INSTALL_CHECK
 		if [ -f "$MOD_BACKUP_LOG" ]; then
@@ -258,11 +244,6 @@ UPDATER_INSTALL() {
 
 			sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
 
-			if [ ! "$STEAM_USERNAME" = "" ] && [ ! "$STEAM_PASSWD" = "" ]; then
-				sed -i "s/STEAM_USERNAME=/STEAM_USERNAME=\"$STEAM_USERNAME\"/" /root/ark_mod_updater.sh
-				sed -i "s/STEAM_PASSWD=/STEAM_PASSWD=\"$STEAM_PASSWD\"/" /root/ark_mod_updater.sh
-			fi
-
 			if [ ! "$EMAIL_TO" = "" ]; then
 				sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
 			fi
@@ -301,7 +282,10 @@ UPDATER_INSTALL() {
 			fi
 		else
 			redMessage "A old Updater is currently running... please try again later."
-			tput cnorm; echo; echo; exit
+			echo
+			yellowMessage "Thanks for using this script and have a nice Day."
+			HEADER
+			tput cnorm; echo; exit
 		fi
 	else
 		redMessage "Please install a Mod first, before you install the Updater!"
@@ -311,36 +295,45 @@ UPDATER_INSTALL() {
 
 UPDATER_UNINSTALL() {
 	echo; echo
-	if [ -f /etc/cron.d/ark_mod_updater ]; then
-		rm -rf /etc/cron.d/ark_mod_updater
+	SCREEN_CHECK="screen -list | grep ARK_Update"
+	if [ "$SCREEN_CHECK" = "" ] || [ ! -f "$TMP_PATH"/ark_mod_updater_status ] ; then
+		if [ -f /etc/cron.d/ark_mod_updater ]; then
+			rm -rf /etc/cron.d/ark_mod_updater
 
-		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
-			systemctl daemon-reload >/dev/null 2>&1 && service cron restart >/dev/null 2>&1
-			greenMessage "Updater Cron successfully uninstalled."
+			if [ ! -f /etc/cron.d/ark_mod_updater ]; then
+				systemctl daemon-reload >/dev/null 2>&1 && service cron restart >/dev/null 2>&1
+				greenMessage "Updater Cron successfully uninstalled."
+			else
+				redMessage "Updater Cron uninstalling failed!"
+				redMessage 'Delete "ark_mod_updater" in "/etc/cron.d/" by Hand.'
+				echo
+			fi
 		else
-			redMessage "Updater Cron uninstalling failed!"
-			redMessage 'Delete "ark_mod_updater" in "/etc/cron.d/" by Hand.'
-			echo
+			redMessage 'No Updater Cron in "/etc/cron.d/" found!'
+		fi
+
+		if [ -f /root/ark_mod_updater.sh ]; then
+			rm -rf /root/ark_mod_updater.sh
+
+			if [ ! -f /root/ark_mod_updater.sh ]; then
+				greenMessage "Updater successfully uninstalled."
+				FINISHED
+			else
+				redMessage "Updater uninstalling failed!"
+				redMessage 'Delete "ark_mod_updater.sh" in "/root/" by Hand.'
+				FINISHED
+			fi
+		else
+			redMessage 'No Updater in "/root/" found!'
+			redMessage "Uninstalling canceled."
+			FINISHED
 		fi
 	else
-		redMessage 'No Updater Cron in "/etc/cron.d/" found!'
-	fi
-
-	if [ -f /root/ark_mod_updater.sh ]; then
-		rm -rf /root/ark_mod_updater.sh
-
-		if [ ! -f /root/ark_mod_updater.sh ]; then
-			greenMessage "Updater successfully uninstalled."
-			FINISHED
-		else
-			redMessage "Updater uninstalling failed!"
-			redMessage 'Delete "ark_mod_updater.sh" in "/root/" by Hand.'
-			FINISHED
-		fi
-	else
-		redMessage 'No Updater in "/root/" found!'
-		redMessage "Uninstalling canceled."
-		FINISHED
+		redMessage "Updater is currently running... please try again later."
+		echo
+		yellowMessage "Thanks for using this script and have a nice Day."
+		HEADER
+		tput cnorm; echo; exit
 	fi
 }
 
@@ -500,11 +493,7 @@ MOD_DOWNLOAD() {
 		fi
 		touch "$TMP_PATH"/ark_spinner
 		SPINNER &
-		if ([ ! "$STEAM_USERNAME" = "" ] && [ ! "$STEAM_PASSWD" = "" ]); then
-			RESULT=$(su "$MASTERSERVER_USER" -c "$STEAM_CMD_PATH +login $STEAM_USERNAME $STEAM_PASSWD +workshop_download_item $ARK_APP_ID $MODID validate +quit" | egrep "Success" | cut -c 1-7)
-		else
-			RESULT=$(su "$MASTERSERVER_USER" -c "$STEAM_CMD_PATH +login anonymous +workshop_download_item $ARK_APP_ID $MODID validate +quit" | egrep "Success" | cut -c 1-7)
-		fi
+		RESULT=$(su "$MASTERSERVER_USER" -c "$STEAM_CMD_PATH +login anonymous +workshop_download_item $ARK_APP_ID $MODID validate +quit" | egrep "Success" | cut -c 1-7)
 
 		if [ "$RESULT" = "Success" ]; then
 			rm -rf "$TMP_PATH"/ark_spinner
@@ -755,17 +744,8 @@ FINISHED() {
 		set +x
 	fi
 	yellowMessage "Thanks for using this script and have a nice Day."
+	HEADER
 	echo
-	cyanMessage "###################################################"
-	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
-	cyanMessage "####        ARK - Mod / Content Manager        ####"
-	cyanMessage "####               Version: $CURRENT_VERSION                ####"
-	cyanMessage "####                    by                     ####"
-	cyanMessage "####                Lacrimosa99                ####"
-	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
-	cyanMessage "####      www.Devil-Hunter-Multigaming.de      ####"
-	cyanMessage "###################################################"
-	echo; echo
 	exit 0
 }
 
@@ -774,6 +754,20 @@ ERROR() {
 	redMessage "It was not a valid input detected!"
 	redMessage "Please wait..."
 	sleep 3
+}
+
+HEADER() {
+	echo
+	cyanMessage "###################################################"
+	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
+	cyanMessage "####        ARK - Mod / Content Manager        ####"
+	cyanMessage "####               Version: $CURRENT_VERSION              ####"
+	cyanMessage "####                    by                     ####"
+	cyanMessage "####                Lacrimosa99                ####"
+	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
+	cyanMessage "####      www.Devil-Hunter-Multigaming.de      ####"
+	cyanMessage "###################################################"
+	echo
 }
 
 greenMessage() {
