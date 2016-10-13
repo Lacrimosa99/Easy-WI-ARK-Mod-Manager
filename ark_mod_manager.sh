@@ -6,7 +6,7 @@ DEBUG="OFF"
 # Easy-WI Masterserver User
 MASTERSERVER_USER="easy-wi"
 
-# E-Mail Modul
+# E-Mail Modul for Autoupdater
 # deactivate E-Mail Support with empty EMAIL_TO Field
 EMAIL_TO=""
 
