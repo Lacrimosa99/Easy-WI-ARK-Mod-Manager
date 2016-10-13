@@ -41,7 +41,16 @@ DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-l
 PRE_CHECK() {
 	VERSION_CHECK
 	USER_CHECK
-	MENU
+	SCREEN_CHECK="screen -list | grep ARK_Update"
+	if [ "$SCREEN_CHECK" = "" ] && [ ! -f "$TMP_PATH"/ark_mod_updater_status ] ; then
+		MENU
+	else
+		redMessage "Updater is currently running... please try again later."
+		echo
+		yellowMessage "Thanks for using this script and have a nice Day."
+		HEADER
+		tput cnorm; echo; exit
+	fi
 }
 
 VERSION_CHECK() {
@@ -133,13 +142,7 @@ MENU() {
 INSTALL() {
 	echo; echo
 	unset ARK_MOD_ID
-	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
-		touch "$TMP_PATH"/ark_mod_updater_status
-	else
-		redMessage "Update in work... aborted!"
-		echo
-		FINISHED
-	fi
+	touch "$TMP_PATH"/ark_mod_updater_status
 	tput cnorm
 	printf "Please enter the ModID: "; read -n9 ARK_MOD_ID
 	tput civis; echo
@@ -161,12 +164,9 @@ INSTALL() {
 
 INSTALL_ALL() {
 	echo; echo
-	yellowMessage "Please wait..."
-	if [ ! -f "$MOD_LOG" ]; then
+	if [ ! -f "$MOD_LOG" ] && [ ! -f "$MOD_BACKUP_LOG" ]; then
+		yellowMessage "Please wait..."
 		INSTALL_CHECK
-		if [ -f "$MOD_BACKUP_LOG" ]; then
-			rm -rf "$MOD_BACKUP_LOG"
-		fi
 		echo; echo
 		cyanMessage "List of installed Mods:"
 		echo
@@ -223,69 +223,60 @@ UPDATE() {
 UPDATER_INSTALL() {
 	echo; echo
 	if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
-		SCREEN_CHECK="screen -list | grep ARK_Update"
-		if [ "$SCREEN_CHECK" = "" ] || [ ! -f "$TMP_PATH"/ark_mod_updater_status ] ; then
-			yellowMessage "Check, is a old Updater Script installed."
-			if [ -f /root/ark_mod_updater.sh ]; then
-				rm -rf /root/ark_mod_updater.sh
-				redMessage "old Updater Script found and removed."
-				sleep 3
-				echo
-			else
-				greenMessage "No old Script found."
-				sleep 3
-				echo
-			fi
-
-			yellowMessage "Downloading current Updater Script from Github"
-			yellowMessage "Please wait..."
-			wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
-			chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
-
-			sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
-
-			if [ ! "$EMAIL_TO" = "" ]; then
-				sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
-			fi
+		yellowMessage "Check, is a old Updater Script installed."
+		if [ -f /root/ark_mod_updater.sh ]; then
+			rm -rf /root/ark_mod_updater.sh
+			redMessage "old Updater Script found and removed."
 			sleep 3
-			greenMessage "Done."
 			echo
+		else
+			greenMessage "No old Script found."
+			sleep 3
+			echo
+		fi
 
-			yellowMessage "Check, is Cronjob already installed."
-			if [ ! -f /etc/cron.d/ark_mod_updater ]; then
-				echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' > /etc/cron.d/ark_mod_updater
+		yellowMessage "Downloading current Updater Script from Github"
+		yellowMessage "Please wait..."
+		wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
+		chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
 
-				if [ -f /etc/cron.d/ark_mod_updater ]; then
-					systemctl daemon-reload >/dev/null 2>&1
-					service cron restart >/dev/null 2>&1
-					greenMessage "Updater Cron successfully installed."
-					sleep 3
-					echo
-				else
-					redMessage "Updater Cron installation failed!"
-					FINISHED
-				fi
-			else
-				greenMessage "Updater Cron already installed."
+		sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+
+		if [ ! "$EMAIL_TO" = "" ]; then
+			sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+		fi
+		sleep 3
+		greenMessage "Done."
+		echo
+
+		yellowMessage "Check, is Cronjob already installed."
+		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
+			echo '30 1 * * * root /root/ark_mod_updater.sh >/dev/null 2>&1' > /etc/cron.d/ark_mod_updater
+
+			if [ -f /etc/cron.d/ark_mod_updater ]; then
+				systemctl daemon-reload >/dev/null 2>&1
+				service cron restart >/dev/null 2>&1
+				greenMessage "Updater Cron successfully installed."
 				sleep 3
 				echo
-			fi
-
-			if [ -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
-				screen -AmdS ARK_Updater "/root/ark_mod_updater.sh"
-				greenMessage "Updater successfully installed and run for the first time in background."
 			else
-				redMessage "Updater installation failed!"
-				redMessage "Cron and Updater will be removed!"
-				sleep 3
-				UPDATER_UNINSTALL
+				redMessage "Updater Cron installation failed!"
+				FINISHED
 			fi
 		else
-			redMessage "A old Updater is currently running... please try again later."
+			greenMessage "Updater Cron already installed."
+			sleep 3
 			echo
-			yellowMessage "Thanks for using this script and have a nice Day."
-			HEADER
-			tput cnorm; echo; exit
+		fi
+
+		if [ -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
+			screen -AmdS ARK_Updater "/root/ark_mod_updater.sh"
+			greenMessage "Updater successfully installed and run for the first time in background."
+		else
+			redMessage "Updater installation failed!"
+			redMessage "Cron and Updater will be removed!"
+			sleep 3
+			UPDATER_UNINSTALL
 		fi
 	else
 		redMessage "Please install a Mod first, before you install the Updater!"
@@ -295,45 +286,36 @@ UPDATER_INSTALL() {
 
 UPDATER_UNINSTALL() {
 	echo; echo
-	SCREEN_CHECK="screen -list | grep ARK_Update"
-	if [ "$SCREEN_CHECK" = "" ] || [ ! -f "$TMP_PATH"/ark_mod_updater_status ] ; then
-		if [ -f /etc/cron.d/ark_mod_updater ]; then
-			rm -rf /etc/cron.d/ark_mod_updater
+	if [ -f /etc/cron.d/ark_mod_updater ]; then
+		rm -rf /etc/cron.d/ark_mod_updater
 
-			if [ ! -f /etc/cron.d/ark_mod_updater ]; then
-				systemctl daemon-reload >/dev/null 2>&1 && service cron restart >/dev/null 2>&1
-				greenMessage "Updater Cron successfully uninstalled."
-			else
-				redMessage "Updater Cron uninstalling failed!"
-				redMessage 'Delete "ark_mod_updater" in "/etc/cron.d/" by Hand.'
-				echo
-			fi
+		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
+			systemctl daemon-reload >/dev/null 2>&1 && service cron restart >/dev/null 2>&1
+			greenMessage "Updater Cron successfully uninstalled."
 		else
-			redMessage 'No Updater Cron in "/etc/cron.d/" found!'
+			redMessage "Updater Cron uninstalling failed!"
+			redMessage 'Delete "ark_mod_updater" in "/etc/cron.d/" by Hand.'
+			echo
 		fi
+	else
+		redMessage 'No Updater Cron in "/etc/cron.d/" found!'
+	fi
 
-		if [ -f /root/ark_mod_updater.sh ]; then
-			rm -rf /root/ark_mod_updater.sh
+	if [ -f /root/ark_mod_updater.sh ]; then
+		rm -rf /root/ark_mod_updater.sh
 
-			if [ ! -f /root/ark_mod_updater.sh ]; then
-				greenMessage "Updater successfully uninstalled."
-				FINISHED
-			else
-				redMessage "Updater uninstalling failed!"
-				redMessage 'Delete "ark_mod_updater.sh" in "/root/" by Hand.'
-				FINISHED
-			fi
+		if [ ! -f /root/ark_mod_updater.sh ]; then
+			greenMessage "Updater successfully uninstalled."
+			FINISHED
 		else
-			redMessage 'No Updater in "/root/" found!'
-			redMessage "Uninstalling canceled."
+			redMessage "Updater uninstalling failed!"
+			redMessage 'Delete "ark_mod_updater.sh" in "/root/" by Hand.'
 			FINISHED
 		fi
 	else
-		redMessage "Updater is currently running... please try again later."
-		echo
-		yellowMessage "Thanks for using this script and have a nice Day."
-		HEADER
-		tput cnorm; echo; exit
+		redMessage 'No Updater in "/root/" found!'
+		redMessage "Uninstalling canceled."
+		FINISHED
 	fi
 }
 
@@ -387,6 +369,7 @@ UNINSTALL() {
 }
 
 UNINSTALL_ALL() {
+	echo; echo
 	if [ -f "$MOD_LOG" ]; then
 		local DELETE_MOD=$(cat "$MOD_LOG" | cut -c 1-9 )
 
@@ -401,7 +384,6 @@ UNINSTALL_ALL() {
 			rm -rf "$LOG_PATH"/ark_mod_* 2>&1 >/dev/null
 		fi
 
-		echo; echo
 		greenMessage "all Mods successfully uninstalled."
 		FINISHED
 	else
@@ -703,6 +685,20 @@ QUESTION4() {
 			continue;;
 		*)
 			ERROR; QUESTION4;;
+	esac
+}
+
+QUESTION5() {
+	echo; echo;	tput cnorm
+	printf "Installing Mod Autoupdater [Y/N]?: "; read -n1 ANSWER
+	tput civis
+	case $ANSWER in
+		y|Y|j|J)
+			UPDATER_INSTALL;;
+		n|N)
+			FINISHED;;
+		*)
+			ERROR; QUESTION5;;
 	esac
 }
 
