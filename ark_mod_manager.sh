@@ -43,7 +43,7 @@ PRE_CHECK() {
 	HEADER
 	VERSION_CHECK
 	USER_CHECK
-	sleep 3
+	sleep 2
 	SCREEN_CHECK="screen -list | grep ARK_Updater"
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
 		MENU
@@ -67,11 +67,11 @@ VERSION_CHECK() {
 	else
 		greenMessage "You are using the up to date version ${CURRENT_VERSION}"
 		sleep 3
+		echo
 	fi
 }
 
 USER_CHECK() {
-	echo
 	if [ ! "$MASTERSERVER_USER" = "" ]; then
 		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER")
 		if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
