@@ -43,6 +43,7 @@ PRE_CHECK() {
 	HEADER
 	VERSION_CHECK
 	USER_CHECK
+	sleep 3
 	SCREEN_CHECK="screen -list | grep ARK_Updater"
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
 		MENU
