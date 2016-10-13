@@ -39,10 +39,12 @@ TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
 DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued"
 
 PRE_CHECK() {
+	clear
+	HEADER
 	VERSION_CHECK
 	USER_CHECK
-	SCREEN_CHECK="screen -list | grep ARK_Update"
-	if [ "$SCREEN_CHECK" = "" ] && [ ! -f "$TMP_PATH"/ark_mod_updater_status ] ; then
+	SCREEN_CHECK="screen -list | grep ARK_Updater"
+	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
 		MENU
 	else
 		redMessage "Updater is currently running... please try again later."
@@ -54,9 +56,8 @@ PRE_CHECK() {
 }
 
 VERSION_CHECK() {
-	echo; echo
 	yellowMessage "Checking for the latest installer Script"
-	LATEST_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
+	LATEST_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9]\.[0-9])'`
 
 	if [ "`printf "${LATEST_VERSION}\n${CURRENT_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_VERSION" ]; then
 		redMessage "You are using the old script version ${CURRENT_VERSION}."
@@ -69,7 +70,7 @@ VERSION_CHECK() {
 }
 
 USER_CHECK() {
-	echo; echo
+	echo
 	if [ ! "$MASTERSERVER_USER" = "" ]; then
 		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER")
 		if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
