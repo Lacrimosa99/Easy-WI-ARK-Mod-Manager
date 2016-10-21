@@ -240,7 +240,14 @@ UPDATER_INSTALL() {
 		yellowMessage "Downloading current Updater Script from Github"
 		yellowMessage "Please wait..."
 		wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
-		chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+
+		if [ -f /root/ark_mod_updater.sh ]; then
+			chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+		else
+			redMessage "Updater Script downloading failed!"
+			redMessage "Update canceled."
+			FINISHED
+		fi
 
 		sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
 
