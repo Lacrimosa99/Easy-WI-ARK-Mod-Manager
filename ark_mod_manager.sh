@@ -35,6 +35,7 @@ EASYWI_XML_FILES="/home/$MASTERSERVER_USER/easywi-xml-files"
 LOG_PATH="/home/"$MASTERSERVER_USER"/logs"
 MOD_LOG=""$LOG_PATH"/ark_mod_id.log"
 MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
+MOD_NO_UPDATE_LOG=""$LOG_PATH"/ark_mod_id_no_update.log"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
 DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued"
 
@@ -341,7 +342,7 @@ UNINSTALL() {
 		unset ARK_MOD_ID
 		yellowMessage "List of installed Mods:"
 		echo
-		cat "$MOD_LOG" | sort
+		cat "$MOD_LOG" && if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi | sort
 
 		echo; echo;	tput cnorm
 		printf "What ModID you want to uninstall?: "; read -n9 ARK_MOD_ID
@@ -387,7 +388,7 @@ UNINSTALL() {
 UNINSTALL_ALL() {
 	echo; echo
 	if [ -f "$MOD_LOG" ]; then
-		local DELETE_MOD=$(cat "$MOD_LOG" | cut -c 1-9 )
+		local DELETE_MOD=$(cat "$MOD_LOG" && if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi | cut -c 1-9 )
 
 		if [ ! "$DELETE_MOD" = "" ]; then
 			for DELETE in ${DELETE_MOD[@]}; do
@@ -698,7 +699,7 @@ QUESTION4() {
 			sed -i "/$MODID/d" "$MOD_BACKUP_LOG" 2>&1 >/dev/null
 			rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" 2>&1 >/dev/null;;
 		n|N)
-			continue;;
+			QUESTION6;;
 		*)
 			ERROR; QUESTION4;;
 	esac
@@ -715,6 +716,25 @@ QUESTION5() {
 			FINISHED;;
 		*)
 			ERROR; QUESTION5;;
+	esac
+}
+
+QUESTION6() {
+	echo; echo
+	tput cnorm
+	printf 'ModID in "not Update List" adding [Y/N]?: '; read -n1 ANSWER
+	tput civis
+	case $ANSWER in
+		y|Y|j|J)
+			sed -i "/$MODID/d" "$MOD_BACKUP_LOG" 2>&1 >/dev/null
+			CHECK_ID="cat "$MOD_NO_UPDATE_LOG" | grep "$MODID""
+			if [ "$CHECK_ID" = "" ]; then
+				echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
+			fi;;
+		n|N)
+			continue;;
+		*)
+			ERROR; QUESTION4;;
 	esac
 }
 
