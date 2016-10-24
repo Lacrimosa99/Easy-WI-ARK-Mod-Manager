@@ -123,7 +123,8 @@ UPDATER_CHECK() {
 			echo
 		else
 			redMessage "Updater Script downloading failed."
-			redMessage "Download Updater Script by Hand."
+			redMessage "Please download it manually under https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh"
+			redMessage "Installation canceled!"
 			FINISHED
 		fi
 	else
