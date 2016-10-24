@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_VERSION="2.5.2"
+CURRENT_VERSION="2.5.3"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
