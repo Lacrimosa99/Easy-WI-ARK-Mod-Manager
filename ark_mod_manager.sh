@@ -110,16 +110,24 @@ UPDATER_CHECK() {
 		yellowMessage "Downloading current Updater Script from Github"
 		yellowMessage "Please wait..."
 		wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
-		chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
 
-		sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+		if [ -f /root/ark_mod_updater.sh ]; then
+			chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+			sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
 
-		if [ ! "$EMAIL_TO" = "" ]; then
-			sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+			if [ ! "$EMAIL_TO" = "" ]; then
+				sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+			fi
+			sleep 3
+			greenMessage "Done."
+			echo
+		else
+			echo
+			redMessage "Updater Script downloading failed."
+			redMessage "Please download it manually under https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh"
+			redMessage "Installation canceled!"
+			FINISHED
 		fi
-		sleep 3
-		greenMessage "Done."
-		echo
 	else
 		redMessage "Please install a Mod first, before you install/update the Updater Script!"
 		FINISHED
