@@ -58,8 +58,9 @@ PRE_CHECK() {
 }
 
 VERSION_CHECK() {
-	yellowMessage "Checking for the latest installer Script"
-	LATEST_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9]\.[0-9])'`
+	yellowMessage "Checking for the latest installer and updater Script"
+	LATEST_MANAGER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9]\.[0-9])'`
+	LATEST_UPDATER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
 
 	if [ "`printf "${LATEST_VERSION}\n${CURRENT_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_VERSION" ]; then
 		redMessage "You are using the old script version ${CURRENT_VERSION}."
@@ -108,9 +109,14 @@ UPDATER_CHECK() {
 			echo
 		fi
 
-		yellowMessage "Downloading current Updater Script from Github"
+		yellowMessage "Downloading the last stable Updater Script from Github"
 		yellowMessage "Please wait..."
-		wget --no-check-certificate https://raw.githubusercontent.com/Lacrimosa99/Easy-WI_ARK_Mod_Updater/master/ark_mod_updater.sh >/dev/null 2>&1
+		wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
+		cd /tmp/
+		tar zxf "$LATEST_UPDATER_VERSION".tar.gz
+		rm -rf /tmp/"$LATEST_UPDATER_VERSION".tar.gz
+		mv /tmp/Easy-WI-ARK-Mod-Updater-"$LASTEST_UPDATER_VERSION"/ark_mod_updater.sh /root/
+		rm -rf /tmp/Easy-WI-ARK-Mod-Updater-"$LASTEST_UPDATER_VERSION"
 
 		if [ -f /root/ark_mod_updater.sh ]; then
 			chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
