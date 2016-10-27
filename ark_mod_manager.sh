@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_VERSION="2.5.3"
+CURRENT_MANAGER_VERSION="2.5.3"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -62,13 +62,18 @@ VERSION_CHECK() {
 	LATEST_MANAGER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9]\.[0-9])'`
 	LATEST_UPDATER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
 
-	if [ "`printf "${LATEST_MANAGER_VERSION}\n${CURRENT_MANAGER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_MANAGER_VERSION" ]; then
-		redMessage "You are using the old manager script version ${CURRENT_MANAGER_VERSION}."
-		redMessage "Please upgrade to version ${LATEST_MANAGER_VERSION} and retry."
-		FINISHED
+	if [ ! "$LATEST_MANAGER_VERSION" = "" ]; then
+		if [ "`printf "${LATEST_MANAGER_VERSION}\n${CURRENT_MANAGER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_MANAGER_VERSION" ]; then
+			redMessage "You are using the old manager script version ${CURRENT_MANAGER_VERSION}."
+			redMessage "Please upgrade to version ${LATEST_MANAGER_VERSION} and retry."
+			FINISHED
+		else
+			greenMessage "You are using the up to date manager version ${CURRENT_MANAGER_VERSION}"
+			sleep 3
+		fi
 	else
-		greenMessage "You are using the up to date manager version ${CURRENT_MANAGER_VERSION}"
-		sleep 3
+		redMessage "Could not detect last manager version!"
+		FINISHED
 	fi
 }
 
