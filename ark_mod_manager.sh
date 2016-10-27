@@ -804,7 +804,7 @@ HEADER() {
 	cyanMessage "###################################################"
 	cyanMessage "####         EASY-WI - www.Easy-WI.com         ####"
 	cyanMessage "####        ARK - Mod / Content Manager        ####"
-	cyanMessage "####               Version: $CURRENT_VERSION              ####"
+	cyanMessage "####               Version: $CURRENT_MANAGER_VERSION              ####"
 	cyanMessage "####                    by                     ####"
 	cyanMessage "####                Lacrimosa99                ####"
 	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
