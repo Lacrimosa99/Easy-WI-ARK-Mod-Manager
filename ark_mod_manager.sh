@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_MANAGER_VERSION="2.5.3"
+CURRENT_MANAGER_VERSION="2.5.4"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -80,8 +80,8 @@ VERSION_CHECK() {
 USER_CHECK() {
 	echo
 	if [ ! "$MASTERSERVER_USER" = "" ]; then
-		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER")
-		if [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" ] && [ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]; then
+		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER" | head -n1)
+		if ([ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" -a ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]); then
 			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
 			redMessage "Please check the Masteruser inside this Script or the user shell rights."
 			FINISHED
