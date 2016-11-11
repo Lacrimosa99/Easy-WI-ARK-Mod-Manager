@@ -25,6 +25,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ##########################################
 
 CURRENT_MANAGER_VERSION="2.5.4"
+LOCAL_UPDATER_VERSION="cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]'"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -103,41 +104,40 @@ USER_CHECK() {
 UPDATER_CHECK() {
 	if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
 		yellowMessage "Check, is a old Updater Script installed."
-		if [ -f /root/ark_mod_updater.sh ]; then
+		if [ ! "$LOCAL_UPDATER_VERSION" == "$LATEST_UPDATER_VERSION" ]; then
 			rm -rf /root/ark_mod_updater.sh
-			redMessage "old Updater Script found and removed."
+			redMessage "Old update script is updated."
 			sleep 3
 			echo
-		else
-			greenMessage "No old Script found."
-			sleep 3
-			echo
-		fi
+			yellowMessage "Downloading the last stable Updater Script from Github"
+			yellowMessage "Please wait..."
+			wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
+			cd /tmp/
+			tar zxf "$LATEST_UPDATER_VERSION".tar.gz
+			rm -rf /tmp/"$LATEST_UPDATER_VERSION".tar.gz
+			mv /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"/ark_mod_updater.sh /root/
+			rm -rf /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"
 
-		yellowMessage "Downloading the last stable Updater Script from Github"
-		yellowMessage "Please wait..."
-		wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
-		cd /tmp/
-		tar zxf "$LATEST_UPDATER_VERSION".tar.gz
-		rm -rf /tmp/"$LATEST_UPDATER_VERSION".tar.gz
-		mv /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"/ark_mod_updater.sh /root/
-		rm -rf /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"
+			if [ -f /root/ark_mod_updater.sh ]; then
+				chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+				sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
 
-		if [ -f /root/ark_mod_updater.sh ]; then
-			chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
-			sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
-
-			if [ ! "$EMAIL_TO" = "" ]; then
-				sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+				if [ ! "$EMAIL_TO" = "" ]; then
+					sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+				fi
+				sleep 3
+				greenMessage "Done."
+				echo
+			else
+				redMessage "Updater Script downloading failed."
+				redMessage "Please download the last release under https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases"
+				redMessage "Installation canceled!"
+				FINISHED
 			fi
-			sleep 3
-			greenMessage "Done."
-			echo
 		else
-			redMessage "Updater Script downloading failed."
-			redMessage "Please download the last release under https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases"
-			redMessage "Installation canceled!"
-			FINISHED
+			greenMessage "Updater Script is up-to-date."
+			sleep 3
+			echo
 		fi
 	else
 		redMessage "Please install a Mod first, before you install/update the Updater Script!"
