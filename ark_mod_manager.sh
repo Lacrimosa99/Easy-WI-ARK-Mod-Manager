@@ -25,7 +25,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ##########################################
 
 CURRENT_MANAGER_VERSION="2.5.4"
-LOCAL_UPDATER_VERSION="cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]'"
+LOCAL_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -104,16 +104,15 @@ USER_CHECK() {
 UPDATER_CHECK() {
 	if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
 		yellowMessage "Check, is a old Updater Script installed."
-		if [ ! "$LOCAL_UPDATER_VERSION" == "$LATEST_UPDATER_VERSION" ]; then
+		if [ "`printf "${LATEST_UPDATER_VERSION}\n${LOCAL_UPDATER_VERSION}" | sort -V | tail -n 1`" != "$LOCAL_UPDATER_VERSION" ]; then
+			redMessage "A old update script is found and updated..."
 			rm -rf /root/ark_mod_updater.sh
-			redMessage "Old update script is updated."
 			sleep 3
 			echo
 			yellowMessage "Downloading the last stable Updater Script from Github"
 			yellowMessage "Please wait..."
 			wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
-			cd /tmp/
-			tar zxf "$LATEST_UPDATER_VERSION".tar.gz
+			tar zxf /tmp/"$LATEST_UPDATER_VERSION".tar.gz -C /tmp/
 			rm -rf /tmp/"$LATEST_UPDATER_VERSION".tar.gz
 			mv /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"/ark_mod_updater.sh /root/
 			rm -rf /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"
