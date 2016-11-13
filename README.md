@@ -38,7 +38,7 @@ chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
 
 Open the Ark Mod Manager (ark_mod_manager.sh) in your Terminal and use following Option "Install Updater Script + Cronjob".<br>
 You must nothing more do.. all required Commands and Scripts are automatically installed.<br>
-Every Night at 1:30 Hour (European Time) run the Updater Script and Update all installed Mods.<br>
+Every 2 Hour run the Updater Script and Update all installed Mods.<br>
 
 ---
 
