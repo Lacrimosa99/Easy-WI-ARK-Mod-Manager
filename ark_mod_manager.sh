@@ -202,7 +202,7 @@ INSTALL() {
 
 	if [ ! "$ARK_MOD_ID" = "" ]; then
 		INSTALL_CHECK
-		if [ -f "$MOD_BACKUP_LOG" ]; then
+		if [ -f "$MOD_BACKUP_LOG" ] && [ "$ARK_MOD_NAME_DEPRECATED" = "" ]; then
 			rm -rf "$MOD_BACKUP_LOG"
 		fi
 		rm -rf "$TMP_PATH"/ark_mod_updater_status
@@ -360,18 +360,22 @@ UNINSTALL() {
 
 		if [ ! "$ARK_MOD_ID" = "" ]; then
 			local TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID")
+			local TMP_NAME2=$(cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID")
 			local TMP_PATH=$(ls -la "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID")
-			if [ ! "$TMP_NAME" = "" -o ! "$TMP_PATH" = "" ]; then
+			if [ ! "$TMP_NAME" = "" -o ! "$TMP_NAME2" = "" -o ! "$TMP_PATH" = "" ]; then
 				rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" 2>&1 >/dev/null
 				rm -rf "$EASYWI_XML_FILES"/"$TMP_NAME".xml 2>&1 >/dev/null
 				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG" 2>&1 >/dev/null
+				sed -i "/$ARK_MOD_ID/d" "$MOD_BACKUP_LOG" 2>&1 >/dev/null
+				sed -i "/$ARK_MOD_ID/d" "$MOD_NO_UPDATE_LOG" 2>&1 >/dev/null
+				sleep 3
+				local CHECK_LOG=$(cat "$MOD_NO_UPDATE_LOG")
+				if [ "$CHECK_LOG" = "" ]; then
+					rm -rf "$MOD_NO_UPDATE_LOG"
+				fi
 				echo
 				greenMessage "ModID $ARK_MOD_ID is successfully uninstalled."
 				echo
-				if [ -f "$MOD_BACKUP_LOG" ]; then
-					rm -rf "$MOD_BACKUP_LOG"
-				fi
-				sleep 3
 				local CHECK_LOG=$(cat "$MOD_LOG")
 				if [ ! "$CHECK_LOG" = "" ]; then
 					QUESTION3
@@ -435,21 +439,21 @@ MOD_NAME_CHECK() {
 INSTALL_CHECK() {
 	for MODID in ${ARK_MOD_ID[@]}; do
 		MOD_NAME_CHECK
-		if [ "$ARK_MOD_NAME_DEPRECATED" = "" ]; then
-			if [ ! "$ARK_MOD_NAME" = "" ] && [ ! "$ARK_MOD_NAME_NORMAL" = "" ]; then
-				MOD_DOWNLOAD
-				if [ -d "$STEAM_CONTENT_PATH"/"$MODID" ]; then
-					if [ -d "$ARK_MOD_PATH"/ark_"$MODID" ]; then
-						rm -rf "$ARK_MOD_PATH"/ark_"$MODID"/ShooterGame/Content/Mods/"$MODID"/
-					fi
-					DECOMPRESS
-				else
-					echo; echo
-					redMessage "Mod Name $MODID in the Steam Content Folder not found!"
-					redMessage "Installation canceled!"
-					FINISHED
-				fi
+		if [ ! "$ARK_MOD_NAME" = "" ] && [ ! "$ARK_MOD_NAME_NORMAL" = "" ]; then
+			MOD_DOWNLOAD
+			if [ -d "$STEAM_CONTENT_PATH"/"$MODID" ]; then
 				if [ -d "$ARK_MOD_PATH"/ark_"$MODID" ]; then
+					rm -rf "$ARK_MOD_PATH"/ark_"$MODID"/ShooterGame/Content/Mods/"$MODID"/
+				fi
+				DECOMPRESS
+			else
+				echo; echo
+				redMessage "Mod Name $MODID in the Steam Content Folder not found!"
+				redMessage "Installation canceled!"
+				FINISHED
+			fi
+			if [ -d "$ARK_MOD_PATH"/ark_"$MODID" ]; then
+				if [ "$ARK_MOD_NAME_DEPRECATED" = "" ]; then
 					if [ -f "$MOD_LOG" ]; then
 						local MOD_TMP_NAME=$(cat "$MOD_LOG" | grep "$MODID" )
 					fi
@@ -462,28 +466,33 @@ INSTALL_CHECK() {
 						elif [ "$MODE" = "UPDATE" ]; then
 							sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log
 						fi
-						chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" 2>&1 >/dev/null
-						chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* 2>&1 >/dev/null
-						greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
-						sleep 2
 					fi
 				else
-					echo; echo
-					redMessage "Mod $ARK_MOD_NAME_NORMAL in the masteraddons Folder has not been installed!"
-					redMessage "Installation canceled!"
-					FINISHED
+					if [ -f "$MOD_NO_UPDATE_LOG" ]; then
+						local MOD_TMP_NAME=$(cat "$MOD_NO_UPDATE_LOG" | grep "$MODID" )
+					fi
+					if [ "$MOD_TMP_NAME" = "" ]; then
+						echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
+						if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ] && [ ! -f "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml ]; then
+								CREATE_WI_IMPORT_FILE
+						fi
+					fi
 				fi
 			else
-				redMessage "Steam Community are currently not available or ModID $MODID not known!"
-				redMessage "Please try again later."
+				echo; echo
+				redMessage "Mod $ARK_MOD_NAME_NORMAL in the masteraddons Folder has not been installed!"
 				redMessage "Installation canceled!"
 				FINISHED
 			fi
+			chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" 2>&1 >/dev/null
+			chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* 2>&1 >/dev/null
+			greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
+			sleep 2
 		else
-			redMessage "Mod $ARK_MOD_NAME_NORMAL are not more Supported!"
-			QUESTION4
-			CLEANFILES
-			sleep 3
+			redMessage "Steam Community are currently not available or ModID $MODID not known!"
+			redMessage "Please try again later."
+			redMessage "Installation canceled!"
+			FINISHED
 		fi
 	done
 }
@@ -696,22 +705,6 @@ QUESTION3() {
 			FINISHED;;
 		*)
 			ERROR; QUESTION3;;
-	esac
-}
-
-QUESTION4() {
-	echo; echo
-	tput cnorm
-	printf "ModID uninstalling [Y/N]?: "; read -n1 ANSWER
-	tput civis
-	case $ANSWER in
-		y|Y|j|J)
-			sed -i "/$MODID/d" "$MOD_BACKUP_LOG" 2>&1 >/dev/null
-			rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" 2>&1 >/dev/null;;
-		n|N)
-			QUESTION6;;
-		*)
-			ERROR; QUESTION4;;
 	esac
 }
 
