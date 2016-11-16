@@ -487,7 +487,7 @@ INSTALL_CHECK() {
 					redMessage "Mod $ARK_MOD_NAME_NORMAL in the masteraddons Folder has not been installed!"
 				fi
 			else
-				redMessage "Mod Name $MODID in the Steam Content Folder not found!"
+				redMessage "ModID $MODID in the Steam Content Folder not found!"
 			fi
 		else
 			redMessage "Steam Community are currently not available or ModID $MODID not known!"
