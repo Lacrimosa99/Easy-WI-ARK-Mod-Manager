@@ -274,6 +274,7 @@ UPDATE() {
 		INSTALL_CHECK
 	fi
 	if ! cmp -s "$MOD_LOG" "$MOD_BACKUP_LOG"; then
+		echo; echo
 		redMessage "Error in Logfile found!"
 		redMessage "Logfile Backup restored"
 		cp "$MOD_BACKUP_LOG" "$MOD_LOG"
