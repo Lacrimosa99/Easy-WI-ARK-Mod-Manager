@@ -267,7 +267,7 @@ UPDATE() {
 	fi
 	if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
 		echo; echo
-		yellowMessage "Wait 2 Minutes to redownload Failed IDs."
+		yellowMessage "Wait 2 Minutes to redownload failed IDs."
 		rm -rf $STEAM_CONTENT_PATH/*
 		rm -rf $STEAM_DOWNLOAD_PATH/*
 		sleep 120
@@ -534,9 +534,6 @@ MOD_DOWNLOAD() {
 			if [ "$COUNTER" = "3" ]; then
 				rm -rf "$TMP_PATH"/ark_spinner
 				wait $SPINNER
-				if [ -f "$TMP_PATH"/ark_mod_updater_status ]; then
-					rm -rf "$TMP_PATH"/ark_mod_updater_status
-				fi
 				if [ ! -f "$TMP_PATH"/ark_update_failure.log ]; then
 					touch "$TMP_PATH"/ark_update_failure.log
 				fi
