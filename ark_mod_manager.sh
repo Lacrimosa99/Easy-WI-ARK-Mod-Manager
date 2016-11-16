@@ -266,6 +266,7 @@ UPDATE() {
 		INSTALL_CHECK
 	fi
 	if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
+		echo; echo
 		yellowMessage "Wait 2 Minutes to redownload Failed IDs."
 		sleep 120
 		COUNTER=0
