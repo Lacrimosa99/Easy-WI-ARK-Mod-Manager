@@ -25,7 +25,6 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ##########################################
 
 CURRENT_MANAGER_VERSION="2.5.4"
-LOCAL_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -38,6 +37,7 @@ MOD_LOG=""$LOG_PATH"/ark_mod_id.log"
 MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
 MOD_NO_UPDATE_LOG=""$LOG_PATH"/ark_mod_id_no_update.log"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
+LOCAL_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
 DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued"
 
 PRE_CHECK() {
@@ -46,7 +46,6 @@ PRE_CHECK() {
 	VERSION_CHECK
 	USER_CHECK
 	sleep 2
-	SCREEN_CHECK="screen -list | grep ARK_Updater"
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
 		MENU
 	else
@@ -267,6 +266,7 @@ UPDATE() {
 		INSTALL_CHECK
 	fi
 	if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
+		sleep 120
 		COUNTER=0
 		unset ARK_MOD_ID
 		ARK_MOD_ID=$(cat "$TMP_PATH"/ark_update_failure.log)
