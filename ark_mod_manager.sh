@@ -265,14 +265,20 @@ UPDATE() {
 	if [ -f "$TMP_PATH"/ark_custom_appid_tmp.log ]; then
 		ARK_MOD_ID=$(cat "$TMP_PATH"/ark_custom_appid_tmp.log)
 		INSTALL_CHECK
-		if ! cmp -s "$MOD_LOG" "$MOD_BACKUP_LOG"; then
-			redMessage "Error in Logfile found!"
-			redMessage "Logfile Backup restored"
-			cp "$MOD_BACKUP_LOG" "$MOD_LOG"
-		fi
-		rm -rf "$TMP_PATH"/ark_mod_updater_status 2>&1 >/dev/null
-		FINISHED
 	fi
+	if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
+		COUNTER=0
+		unset ARK_MOD_ID
+		ARK_MOD_ID=$(cat "$TMP_PATH"/ark_update_failure.log)
+		INSTALL_CHECK
+	fi
+	if ! cmp -s "$MOD_LOG" "$MOD_BACKUP_LOG"; then
+		redMessage "Error in Logfile found!"
+		redMessage "Logfile Backup restored"
+		cp "$MOD_BACKUP_LOG" "$MOD_LOG"
+	fi
+	rm -rf "$TMP_PATH"/ark_mod_updater_status 2>&1 >/dev/null
+	FINISHED
 }
 
 UPDATER_INSTALL() {
@@ -446,53 +452,47 @@ INSTALL_CHECK() {
 					rm -rf "$ARK_MOD_PATH"/ark_"$MODID"/ShooterGame/Content/Mods/"$MODID"/
 				fi
 				DECOMPRESS
-			else
-				echo; echo
-				redMessage "Mod Name $MODID in the Steam Content Folder not found!"
-				redMessage "Installation canceled!"
-				FINISHED
-			fi
-			if [ -d "$ARK_MOD_PATH"/ark_"$MODID" ]; then
-				if [ "$ARK_MOD_NAME_DEPRECATED" = "" ]; then
-					if [ -f "$MOD_LOG" ]; then
-						local MOD_TMP_NAME=$(cat "$MOD_LOG" | grep "$MODID" )
-					fi
-					if [ "$MOD_TMP_NAME" = "" ]; then
-						echo "$MODID" >> "$MOD_LOG"
-						if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ]; then
-							if [ ! -f "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml ]; then
-								CREATE_WI_IMPORT_FILE
+				if [ -d "$ARK_MOD_PATH"/ark_"$MODID" ]; then
+					if [ "$ARK_MOD_NAME_DEPRECATED" = "" ]; then
+						if [ -f "$MOD_LOG" ]; then
+							local MOD_TMP_NAME=$(cat "$MOD_LOG" | grep "$MODID")
+						fi
+						if [ "$MOD_TMP_NAME" = "" ]; then
+							echo "$MODID" >> "$MOD_LOG"
+							if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ]; then
+								if [ ! -f "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml ]; then
+									CREATE_WI_IMPORT_FILE
+								fi
+							elif [ "$MODE" = "UPDATE" ]; then
+								sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log
 							fi
-						elif [ "$MODE" = "UPDATE" ]; then
-							sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log
+						fi
+					else
+						if [ -f "$MOD_NO_UPDATE_LOG" ]; then
+							local MOD_TMP_NAME=$(cat "$MOD_NO_UPDATE_LOG" | grep "$MODID" )
+						fi
+						if [ "$MOD_TMP_NAME" = "" ]; then
+							echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
+							if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ] && [ ! -f "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml ]; then
+									CREATE_WI_IMPORT_FILE
+							fi
 						fi
 					fi
+					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" 2>&1 >/dev/null
+					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* 2>&1 >/dev/null
+					greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
+					sleep 2
 				else
-					if [ -f "$MOD_NO_UPDATE_LOG" ]; then
-						local MOD_TMP_NAME=$(cat "$MOD_NO_UPDATE_LOG" | grep "$MODID" )
-					fi
-					if [ "$MOD_TMP_NAME" = "" ]; then
-						echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
-						if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ] && [ ! -f "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml ]; then
-								CREATE_WI_IMPORT_FILE
-						fi
-					fi
+					echo; echo
+					redMessage "Mod $ARK_MOD_NAME_NORMAL in the masteraddons Folder has not been installed!"
 				fi
 			else
 				echo; echo
-				redMessage "Mod $ARK_MOD_NAME_NORMAL in the masteraddons Folder has not been installed!"
-				redMessage "Installation canceled!"
-				FINISHED
+				redMessage "Mod Name $MODID in the Steam Content Folder not found!"
 			fi
-			chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" 2>&1 >/dev/null
-			chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* 2>&1 >/dev/null
-			greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
-			sleep 2
 		else
 			redMessage "Steam Community are currently not available or ModID $MODID not known!"
 			redMessage "Please try again later."
-			redMessage "Installation canceled!"
-			FINISHED
 		fi
 	done
 }
@@ -524,16 +524,23 @@ MOD_DOWNLOAD() {
 			if [ "$COUNTER" = "3" ]; then
 				rm -rf "$TMP_PATH"/ark_spinner
 				wait $SPINNER
-				redMessage "FAILURE"
-				cyanonelineMessage "Connection Attempts:   "; whiteMessage "$COUNTER"
-				rm -rf "$MOD_LOG"
-				cp "$MOD_BACKUP_LOG" "$MOD_LOG" >/dev/null 2>&1
 				if [ -f "$TMP_PATH"/ark_mod_updater_status ]; then
 					rm -rf "$TMP_PATH"/ark_mod_updater_status
 				fi
-				CLEANFILES
+				if [ ! -f "$TMP_PATH"/ark_update_failure.log ]; then
+					touch "$TMP_PATH"/ark_update_failure.log
+				fi
+				local TMP_ID=$(cat "$TMP_PATH"/ark_update_failure.log | grep "$MODID")
+				if [ "$TMP_ID" = "" ]; then
+					echo "$MODID" >> "$TMP_PATH"/ark_update_failure.log
+				fi
+				sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log
+				redMessage "FAILURE"
+				cyanonelineMessage "Connection Attempts:   "; whiteMessage "$COUNTER"
 				break
 			else
+				rm -rf "$TMP_PATH"/ark_spinner
+				wait $SPINNER
 				rm -rf $STEAM_CONTENT_PATH/*
 				rm -rf $STEAM_DOWNLOAD_PATH/*
 				let COUNTER=$COUNTER+1
@@ -768,6 +775,9 @@ CLEANFILES() {
 	fi
 	if [ -f "$TMP_PATH"/ark_spinner ]; then
 		rm -rf "$TMP_PATH"/ark_spinner
+	fi
+	if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
+		rm -rf "$TMP_PATH"/ark_update_failure.log
 	fi
 }
 
