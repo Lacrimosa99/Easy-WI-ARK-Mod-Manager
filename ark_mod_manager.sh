@@ -487,7 +487,6 @@ INSTALL_CHECK() {
 					redMessage "Mod $ARK_MOD_NAME_NORMAL in the masteraddons Folder has not been installed!"
 				fi
 			else
-				echo; echo
 				redMessage "Mod Name $MODID in the Steam Content Folder not found!"
 			fi
 		else
@@ -514,6 +513,12 @@ MOD_DOWNLOAD() {
 		RESULT=$(su "$MASTERSERVER_USER" -c "$STEAM_CMD_PATH +login anonymous +workshop_download_item $ARK_APP_ID $MODID validate +quit" | egrep "Success" | cut -c 1-7)
 
 		if [ "$RESULT" = "Success" ]; then
+			if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
+				local TMP_ID=$(cat "$TMP_PATH"/ark_update_failure.log | grep "$MODID")
+				if [ "$TMP_ID" = "" ]; then
+					sed -i "/$MODID/d" "$TMP_PATH"/ark_update_failure.log
+				fi
+			fi
 			rm -rf "$TMP_PATH"/ark_spinner
 			wait $SPINNER
 			greenMessage "$RESULT"
