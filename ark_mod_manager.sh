@@ -266,6 +266,7 @@ UPDATE() {
 		INSTALL_CHECK
 	fi
 	if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
+		YellowMessage "Wait 2 Minutes to redownload Failed IDs."
 		sleep 120
 		COUNTER=0
 		unset ARK_MOD_ID
