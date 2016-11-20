@@ -60,7 +60,6 @@ PRE_CHECK() {
 VERSION_CHECK() {
 	yellowMessage "Checking for the latest installer and updater Script"
 	LATEST_MANAGER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9]\.[0-9])'`
-	LATEST_UPDATER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
 
 	if [ ! "$LATEST_MANAGER_VERSION" = "" ]; then
 		if [ "`printf "${LATEST_MANAGER_VERSION}\n${CURRENT_MANAGER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_MANAGER_VERSION" ]; then
@@ -101,44 +100,51 @@ USER_CHECK() {
 }
 
 UPDATER_CHECK() {
-	if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
-		yellowMessage "Check, is a old Updater Script installed."
-		if [ "`printf "${LATEST_UPDATER_VERSION}\n${LOCAL_UPDATER_VERSION}" | sort -V | tail -n 1`" != "$LOCAL_UPDATER_VERSION" ]; then
-			redMessage "A old update script is found and updated..."
-			rm -rf /root/ark_mod_updater.sh
-			sleep 3
-			echo
-			yellowMessage "Downloading the last stable Updater Script from Github"
-			yellowMessage "Please wait..."
-			wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
-			tar zxf /tmp/"$LATEST_UPDATER_VERSION".tar.gz -C /tmp/
-			rm -rf /tmp/"$LATEST_UPDATER_VERSION".tar.gz
-			mv /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"/ark_mod_updater.sh /root/
-			rm -rf /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"
+	LATEST_UPDATER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
+	if [ ! "$LATEST_MANAGER_VERSION" = "" ]; then
+		if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
+			yellowMessage "Check, is a old Updater Script installed."
 
-			if [ -f /root/ark_mod_updater.sh ]; then
-				chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
-				sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
-
-				if [ ! "$EMAIL_TO" = "" ]; then
-					sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
-				fi
+			if [ "`printf "${LATEST_UPDATER_VERSION}\n${LOCAL_UPDATER_VERSION}" | sort -V | tail -n 1`" != "$LOCAL_UPDATER_VERSION" ]; then
+				redMessage "A old update script is found and updated..."
+				rm -rf /root/ark_mod_updater.sh
 				sleep 3
-				greenMessage "Done."
 				echo
+				yellowMessage "Downloading the last stable Updater Script from Github"
+				yellowMessage "Please wait..."
+				wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
+				tar zxf /tmp/"$LATEST_UPDATER_VERSION".tar.gz -C /tmp/
+				rm -rf /tmp/"$LATEST_UPDATER_VERSION".tar.gz
+				mv /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"/ark_mod_updater.sh /root/
+				rm -rf /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"
+
+				if [ -f /root/ark_mod_updater.sh ]; then
+					chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+					sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+
+					if [ ! "$EMAIL_TO" = "" ]; then
+						sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+					fi
+					sleep 3
+					greenMessage "Done."
+					echo
+				else
+					redMessage "Updater Script downloading failed."
+					redMessage "Please download the last release under https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases"
+					redMessage "Installation canceled!"
+					FINISHED
+				fi
 			else
-				redMessage "Updater Script downloading failed."
-				redMessage "Please download the last release under https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases"
-				redMessage "Installation canceled!"
-				FINISHED
+				greenMessage "Updater Script is up-to-date."
+				sleep 3
+				echo
 			fi
 		else
-			greenMessage "Updater Script is up-to-date."
-			sleep 3
-			echo
+			redMessage "Please install a Mod first, before you install/update the Updater Script!"
+			FINISHED
 		fi
 	else
-		redMessage "Please install a Mod first, before you install/update the Updater Script!"
+		redMessage "Could not detect last manager version!"
 		FINISHED
 	fi
 }
