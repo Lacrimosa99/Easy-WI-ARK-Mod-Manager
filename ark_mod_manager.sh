@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_MANAGER_VERSION="2.5.4"
+CURRENT_MANAGER_VERSION="2.5.5"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -190,7 +190,7 @@ MENU() {
 			tput civis; UPDATER_UNINSTALL;;
 
 		0)
-			tput cnorm; echo; clear; exit;;
+			FINISHED;;
 
 		*)
 			ERROR; MENU;;
@@ -206,6 +206,7 @@ INSTALL() {
 	tput civis; echo
 
 	if [ ! "$ARK_MOD_ID" = "" ]; then
+		QUESTION4
 		INSTALL_CHECK
 		if [ -f "$MOD_BACKUP_LOG" ] && [ "$ARK_MOD_NAME_DEPRECATED" = "" ]; then
 			rm -rf "$MOD_BACKUP_LOG"
@@ -374,6 +375,8 @@ UNINSTALL() {
 		echo; echo;	tput cnorm
 		printf "What ModID you want to uninstall?: "; read -n9 ARK_MOD_ID
 		tput civis; echo
+
+		QUESTION4
 
 		if [ ! "$ARK_MOD_ID" = "" ]; then
 			local TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID")
@@ -728,6 +731,25 @@ QUESTION3() {
 	esac
 }
 
+QUESTION4() {
+	MODID="$ARK_MOD_ID"
+	MOD_NAME_CHECK
+	echo; echo
+	cyanonelineMessage "ARK Mod ID:   "; whiteMessage "$ARK_MOD_ID"
+	cyanonelineMessage "ARK Mod Name: "; whiteMessage "$ARK_MOD_NAME_NORMAL"
+	echo; tput cnorm
+	printf "Are the details correct? [Y/N]?: "; read -n1 ANSWER
+	tput civis
+	case $ANSWER in
+		y|Y|j|J)
+			echo;;
+		n|N)
+			echo; echo; redMessage 'Your Answer is "No" ... redirect to Menu.'; sleep 3; tput cnorm; MENU;;
+		*)
+			ERROR; QUESTION4;;
+	esac
+}
+
 QUESTION5() {
 	echo; echo;	tput cnorm
 	printf "Installing Mod Autoupdater [Y/N]?: "; read -n1 ANSWER
@@ -796,6 +818,9 @@ CLEANFILES() {
 
 FINISHED() {
 	CLEANFILES
+	if [ -f "$TMP_PATH"/ark_mod_updater_status ]; then
+		rm -rf "$TMP_PATH"/ark_mod_updater_status
+	fi
 	echo; echo
 	tput cnorm
 	if [ "$DEBUG" == "ON" ]; then
