@@ -38,7 +38,7 @@ MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
 MOD_NO_UPDATE_LOG=""$LOG_PATH"/ark_mod_id_no_update.log"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
 LOCAL_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
-DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-supported|old|discontinued|no-longer-developed"
+DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-|old|discontinued"
 
 PRE_CHECK() {
 	clear
@@ -504,6 +504,7 @@ INSTALL_CHECK() {
 				redMessage "ModID $MODID in the Steam Content Folder not found!"
 			fi
 		else
+			echo "$MODID" >> "$MOD_LOG"
 			redMessage "Steam Community are currently not available or ModID $MODID not known!"
 			redMessage "Please try again later."
 		fi
