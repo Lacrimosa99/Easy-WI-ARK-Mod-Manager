@@ -36,9 +36,11 @@ LOG_PATH="/home/"$MASTERSERVER_USER"/logs"
 MOD_LOG=""$LOG_PATH"/ark_mod_id.log"
 MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
 MOD_NO_UPDATE_LOG=""$LOG_PATH"/ark_mod_id_no_update.log"
+MOD_LAST_UPDATE="/home/"$MASTERSERVER_USER"/versions"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
 LOCAL_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
 DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-|old|discontinued"
+ARK_LOCAL_DATE=$(LANG=en_us_88591 date -d "1 day ago" +"%d %b")
 
 PRE_CHECK() {
 	clear
@@ -47,6 +49,9 @@ PRE_CHECK() {
 	USER_CHECK
 	sleep 2
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
+		if [ ! -d "$MOD_LAST_UPDATE" ]; then
+			mkdir "$MOD_LAST_UPDATE"
+		fi
 		MENU
 	else
 		redMessage "Updater is currently running... please try again later."
@@ -144,6 +149,7 @@ UPDATER_CHECK() {
 			FINISHED
 		fi
 	else
+		echo
 		redMessage "Could not detect last manager version!"
 		FINISHED
 	fi
@@ -494,6 +500,7 @@ INSTALL_CHECK() {
 					fi
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" 2>&1 >/dev/null
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* 2>&1 >/dev/null
+					echo "$ARK_LOCAL_DATE" > ""$MOD_LAST_UPDATE"/ark_mod_id_"$MODID".txt"
 					greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
 					sleep 2
 				else
