@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_MANAGER_VERSION="2.5.5"
+CURRENT_MANAGER_VERSION="2.5.6"
 ARK_APP_ID="346110"
 STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
 STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
@@ -36,11 +36,10 @@ LOG_PATH="/home/"$MASTERSERVER_USER"/logs"
 MOD_LOG=""$LOG_PATH"/ark_mod_id.log"
 MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
 MOD_NO_UPDATE_LOG=""$LOG_PATH"/ark_mod_id_no_update.log"
-MOD_LAST_UPDATE="/home/"$MASTERSERVER_USER"/versions"
+MOD_LAST_VERSION="/home/"$MASTERSERVER_USER"/versions"
 TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
 LOCAL_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
 DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-|old|discontinued"
-ARK_LOCAL_DATE=$(LANG=en_us_88591 date -d "1 day ago" +"%d %b")
 
 PRE_CHECK() {
 	clear
@@ -49,8 +48,8 @@ PRE_CHECK() {
 	USER_CHECK
 	sleep 2
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
-		if [ ! -d "$MOD_LAST_UPDATE" ]; then
-			mkdir "$MOD_LAST_UPDATE"
+		if [ ! -d "$MOD_LAST_VERSION" ]; then
+			su "$MASTERSERVER_USER" -c "mkdir -p "$MOD_LAST_VERSION""
 		fi
 		MENU
 	else
@@ -453,6 +452,7 @@ UNINSTALL_ALL() {
 
 MOD_NAME_CHECK() {
 	ARK_MOD_NAME_NORMAL=$(curl -s "http://steamcommunity.com/sharedfiles/filedetails/?id=$MODID" | sed -n 's|^.*<div class="workshopItemTitle">\([^<]*\)</div>.*|\1|p')
+	ARK_LAST_CHANGES_DATE=$(curl -s "https://steamcommunity.com/sharedfiles/filedetails/changelog/$MODID" | sed -n 's|^.*Update:\([^<]*\)</div>.*|\1|p' | head -n1 | cut -c 2-7 | sed 's/,//;s/[ \t]*$//')
 	ARK_MOD_NAME_TMP=$(echo "$ARK_MOD_NAME_NORMAL" | egrep "Difficulty|ItemTweaks|NPC")
 	if [ ! "$ARK_MOD_NAME_TMP" = "" ]; then
 		ARK_MOD_NAME=$(echo "$ARK_MOD_NAME_NORMAL" | tr "/" "-" | tr "[A-Z]" "[a-z]" | tr " " "-" | tr -d ".,!()[]" | sed "s/-updated//;s/+/-plus/;s/+/plus/" | sed 's/\\/-/;s/\\/-/;s/---/-/')
@@ -500,7 +500,8 @@ INSTALL_CHECK() {
 					fi
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" 2>&1 >/dev/null
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* 2>&1 >/dev/null
-					echo "$ARK_LOCAL_DATE" > ""$MOD_LAST_UPDATE"/ark_mod_id_"$MODID".txt"
+					echo "$ARK_LAST_CHANGES_DATE" > ""$MOD_LAST_VERSION"/ark_mod_id_"$MODID".txt"
+					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$MOD_LAST_VERSION" 2>&1 >/dev/null
 					greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
 					sleep 2
 				else
