@@ -47,3 +47,10 @@ Every 2 Hour run the Updater Script and Update all installed Mods.<br>
 I give only in Github Support.<br>
 No Private or another way are supported!
 
+---
+
+<h4>You find my work well?</h4>
+
+Then support me with a donation.
+Donate: [url=https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=X2EJR9W7HBZWU]Donate Button[/url]
+
