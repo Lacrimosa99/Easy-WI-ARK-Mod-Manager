@@ -51,6 +51,6 @@ No Private or another way are supported!
 
 <h4>You find my work well?</h4>
 
-Then support me with a donation.
+Then support me with a donation.<br>
 Donate: https://goo.gl/rZmLuk
 
