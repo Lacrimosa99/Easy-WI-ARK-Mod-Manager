@@ -27,7 +27,7 @@
 
 <h4>What it's to do?</h4>
 
-Download only the Ark Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
+Download the Ark Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
 Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.<br>
 Copy following Command in your Terminal (Putty or what ever):
 chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
@@ -38,7 +38,7 @@ chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
 
 Open the Ark Mod Manager (ark_mod_manager.sh) in your Terminal and use following Option "Install Updater Script + Cronjob".<br>
 You must nothing more do.. all required Commands and Scripts are automatically installed.<br>
-Every 2 Hour run the Updater Script and Update all installed Mods.<br>
+Every 2 Hour run the Updater Script and Update all installed Mods if required.<br>
 
 ---
 
