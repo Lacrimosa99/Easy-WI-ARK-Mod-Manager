@@ -229,6 +229,7 @@ INSTALL() {
 INSTALL_ALL() {
 	echo; echo
 	if [ ! -f "$MOD_LOG" ] && [ ! -f "$MOD_BACKUP_LOG" ]; then
+		QUESTION7
 		yellowMessage "Please wait..."
 		INSTALL_CHECK
 		echo; echo
@@ -789,6 +790,20 @@ QUESTION6() {
 			continue;;
 		*)
 			ERROR; QUESTION4;;
+	esac
+}
+
+QUESTION7() {
+	echo; echo; tput cnorm
+	printf "Want to install all Mod IDs [Y/N]?: "; read -n1 ANSWER
+	tput civis
+	case $ANSWER in
+		y|Y|j|J)
+			echo;;
+		n|N)
+			FINISHED;;
+		*)
+			ERROR; QUESTION7;;
 	esac
 }
 
