@@ -794,6 +794,15 @@ QUESTION6() {
 }
 
 QUESTION7() {
+	echo
+	echo "Install all Mode - ModID List:"
+	echo
+	for MODID in ${ARK_MOD_ID[@]}; do
+		MOD_NAME_CHECK
+		echo
+		cyanonelineMessage "ARK Mod ID:   "; whiteMessage "$ARK_MOD_ID"
+		cyanonelineMessage "ARK Mod Name: "; whiteMessage "$ARK_MOD_NAME_NORMAL"
+	done
 	echo; echo; tput cnorm
 	printf "Want to install all Mod IDs [Y/N]?: "; read -n1 ANSWER
 	tput civis
