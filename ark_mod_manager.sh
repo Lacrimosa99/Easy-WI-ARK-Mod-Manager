@@ -294,7 +294,7 @@ UPDATE() {
 		redMessage "Logfile Backup restored"
 		cp "$MOD_BACKUP_LOG" "$MOD_LOG"
 	fi
-	rm -rf "$TMP_PATH"/ark_mod_updater_status 2>&1 >/dev/null
+	rm -rf "$TMP_PATH"/ark_mod_updater_status >/dev/null 2>&1
 	FINISHED
 }
 
@@ -388,11 +388,11 @@ UNINSTALL() {
 			local TMP_NAME2=$(cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID")
 			local TMP_PATH=$(ls -la "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID")
 			if [ ! "$TMP_NAME" = "" -o ! "$TMP_NAME2" = "" -o ! "$TMP_PATH" = "" ]; then
-				rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" 2>&1 >/dev/null
-				rm -rf "$EASYWI_XML_FILES"/"$TMP_NAME".xml 2>&1 >/dev/null
-				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG" 2>&1 >/dev/null
-				sed -i "/$ARK_MOD_ID/d" "$MOD_BACKUP_LOG" 2>&1 >/dev/null
-				sed -i "/$ARK_MOD_ID/d" "$MOD_NO_UPDATE_LOG" 2>&1 >/dev/null
+				rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" >/dev/null 2>&1
+				rm -rf "$EASYWI_XML_FILES"/"$TMP_NAME".xml >/dev/null 2>&1
+				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG" >/dev/null 2>&1
+				sed -i "/$ARK_MOD_ID/d" "$MOD_BACKUP_LOG" >/dev/null 2>&1
+				sed -i "/$ARK_MOD_ID/d" "$MOD_NO_UPDATE_LOG" >/dev/null 2>&1
 				sleep 3
 				local CHECK_LOG=$(cat "$MOD_NO_UPDATE_LOG")
 				if [ "$CHECK_LOG" = "" ]; then
@@ -431,13 +431,13 @@ UNINSTALL_ALL() {
 
 		if [ ! "$DELETE_MOD" = "" ]; then
 			for DELETE in ${DELETE_MOD[@]}; do
-				rm -rf "$ARK_MOD_PATH"/ark_"$DELETE" 2>&1 >/dev/null
+				rm -rf "$ARK_MOD_PATH"/ark_"$DELETE" >/dev/null 2>&1
 			done
-			rm -rf "$EASYWI_XML_FILES" 2>&1 >/dev/null
+			rm -rf "$EASYWI_XML_FILES" >/dev/null 2>&1
 		fi
 
 		if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
-			rm -rf "$LOG_PATH"/ark_mod_* 2>&1 >/dev/null
+			rm -rf "$LOG_PATH"/ark_mod_* >/dev/null 2>&1
 		fi
 
 		greenMessage "all Mods successfully uninstalled."
@@ -498,10 +498,10 @@ INSTALL_CHECK() {
 							fi
 						fi
 					fi
-					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" 2>&1 >/dev/null
-					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* 2>&1 >/dev/null
+					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" >/dev/null 2>&1
+					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* >/dev/null 2>&1
 					echo "$ARK_LAST_CHANGES_DATE" > ""$MOD_LAST_VERSION"/ark_mod_id_"$MODID".txt"
-					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$MOD_LAST_VERSION" 2>&1 >/dev/null
+					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$MOD_LAST_VERSION" >/dev/null 2>&1
 					greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
 					sleep 2
 				else
@@ -692,7 +692,7 @@ CREATE_WI_IMPORT_FILE() {
   <rmcmd/>
 </addon>' > "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml
 
-	chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$EASYWI_XML_FILES" 2>&1 >/dev/null
+	chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$EASYWI_XML_FILES" >/dev/null 2>&1
 	echo
 	cyanMessage "Easy-WI XML Import Files under $EASYWI_XML_FILES/ created."
 	cyanMessage 'Import Files in the Webinterface under "Gameserver -> Addons -> Add Gameserver Addons".'
@@ -780,7 +780,7 @@ QUESTION6() {
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
-			sed -i "/$MODID/d" "$MOD_BACKUP_LOG" 2>&1 >/dev/null
+			sed -i "/$MODID/d" "$MOD_BACKUP_LOG" >/dev/null 2>&1
 			CHECK_ID="cat "$MOD_NO_UPDATE_LOG" | grep "$MODID""
 			if [ "$CHECK_ID" = "" ]; then
 				echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
