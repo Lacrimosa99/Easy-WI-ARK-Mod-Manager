@@ -924,7 +924,9 @@ id | grep "uid=0(" > /dev/null
 if [ $? != "0" ]; then
 	uname -a | grep -i CYGWIN > /dev/null
 	if [ $? != "0" ]; then
+		echo
 		redMessage "Still not root, aborting!"
+		redMessage 'You must User "root", to run this Script!'
 		echo
 		echo
 		exit 1
