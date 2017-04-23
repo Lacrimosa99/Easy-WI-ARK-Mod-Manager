@@ -5,23 +5,23 @@
 ---
 
 <h4>Requirements:</h4>
-- Debian or Ubuntu (tested)
-- Root User
-- curl
-- wget
-- sudo
+- Debian or Ubuntu (tested)<br>
+- Root User<br>
+- curl<br>
+- wget<br>
+- sudo<br>
 
 ---
 
 <h4>Which functions are available in Ark Mod Manager?</h4>
 
-- Install a single ARK Mod ID
-- Install predefined ARK Mods (IDs are inside the "ark_mod_downloader.sh" Script)
-- Update all installed ARK Mods IDs
-- Install Updater Script + Cronjob (for automatically Update)
-- Uninstall Updater Script + Crontab
-- Remove a single ARK Mod ID
-- Remove all ARK Mod IDs
+- Install a single ARK Mod ID<br>
+- Install predefined ARK Mods (IDs are inside the "ark_mod_downloader.sh" Script)<br>
+- Update all installed ARK Mods IDs<br>
+- Install Updater Script + Cronjob (for automatically Update)<br>
+- Uninstall Updater Script + Crontab<br>
+- Remove a single ARK Mod ID<br>
+- Remove all ARK Mod IDs<br>
 
 ---
 
