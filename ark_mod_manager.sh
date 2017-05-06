@@ -26,31 +26,32 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 
 CURRENT_MANAGER_VERSION="2.5.6"
 ARK_APP_ID="346110"
-STEAM_MASTER_PATH="/home/$MASTERSERVER_USER/masterserver/steamCMD"
-STEAM_CMD_PATH="$STEAM_MASTER_PATH/steamcmd.sh"
-STEAM_CONTENT_PATH="$STEAM_MASTER_PATH/steamapps/workshop/content/$ARK_APP_ID"
-STEAM_DOWNLOAD_PATH="$STEAM_MASTER_PATH/steamapps/workshop/downloads/$ARK_APP_ID"
-ARK_MOD_PATH="/home/$MASTERSERVER_USER/masteraddons"
-EASYWI_XML_FILES="/home/$MASTERSERVER_USER/easywi-xml-files"
-LOG_PATH="/home/"$MASTERSERVER_USER"/logs"
-MOD_LOG=""$LOG_PATH"/ark_mod_id.log"
-MOD_BACKUP_LOG=""$LOG_PATH"/ark_mod_id_backup.log"
-MOD_NO_UPDATE_LOG=""$LOG_PATH"/ark_mod_id_no_update.log"
-MOD_LAST_VERSION="/home/"$MASTERSERVER_USER"/versions"
-TMP_PATH="/home/"$MASTERSERVER_USER"/temp"
-LOCAL_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
-DEAD_MOD="depreciated|deprecated|outdated|brocken|not-supported|mod-is-dead|no-longer-|old|discontinued"
+MASTER_PATH="/home/$MASTERSERVER_USER"
+STEAM_CMD_PATH="$MASTER_PATH/masterserver/steamCMD/steamcmd.sh"
+STEAM_WORKSHOP_PATH="$MASTER_PATH/Steam/steamapps/workshop"
+STEAM_CONTENT_PATH="$STEAM_WORKSHOP_PATH/content/$ARK_APP_ID"
+STEAM_DOWNLOAD_PATH="$STEAM_WORKSHOP_PATH/downloads/$ARK_APP_ID"
+ARK_MOD_PATH="$MASTER_PATH/masteraddons"
+EASYWI_XML_FILES="$MASTER_PATH/easywi-xml-files"
+LOG_PATH="$MASTER_PATH/logs"
+MOD_LOG="$LOG_PATH/ark_mod_id.log"
+MOD_BACKUP_LOG="$LOG_PATH/ark_mod_id_backup.log"
+MOD_NO_UPDATE_LOG="$LOG_PATH/ark_mod_id_no_update.log"
+MOD_LAST_VERSION="$MASTER_PATH/versions"
+TMP_PATH="$MASTER_PATH/temp"
+CURRENT_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
+DEAD_MOD="deprec|outdated|brocken|not-supported|mod-is-dead|no-longer-|old|discontinued"
 
 PRE_CHECK() {
 	clear
 	HEADER
-	VERSION_CHECK
-	USER_CHECK
-	sleep 2
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
 		if [ ! -d "$MOD_LAST_VERSION" ]; then
 			su "$MASTERSERVER_USER" -c "mkdir -p "$MOD_LAST_VERSION""
 		fi
+		VERSION_CHECK
+		UPDATER_CHECK
+		USER_CHECK
 		MENU
 	else
 		redMessage "Updater is currently running... please try again later."
@@ -59,11 +60,13 @@ PRE_CHECK() {
 		HEADER
 		tput cnorm; echo; exit
 	fi
+	sleep 2
 }
 
 VERSION_CHECK() {
-	yellowMessage "Checking for the latest installer and updater Script"
+	yellowMessage "Checking for the latest Manager Script"
 	LATEST_MANAGER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9]\.[0-9])'`
+	sleep 3
 
 	if [ ! "$LATEST_MANAGER_VERSION" = "" ]; then
 		if [ "`printf "${LATEST_MANAGER_VERSION}\n${CURRENT_MANAGER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_MANAGER_VERSION" ]; then
@@ -71,11 +74,12 @@ VERSION_CHECK() {
 			redMessage "Please upgrade to version ${LATEST_MANAGER_VERSION} and retry."
 			FINISHED
 		else
-			greenMessage "You are using the up to date manager version ${CURRENT_MANAGER_VERSION}"
-			sleep 3
+			greenMessage "You are using the Up-to-Date Manager Version ${CURRENT_MANAGER_VERSION}"
+			sleep 5
+			echo
 		fi
 	else
-		redMessage "Could not detect last manager version!"
+		redMessage "Could not detect last Manager Version!"
 		FINISHED
 	fi
 }
@@ -86,11 +90,11 @@ USER_CHECK() {
 		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER" | head -n1)
 		if ([ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" -a ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]); then
 			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
-			redMessage "Please check the Masteruser inside this Script or the user shell rights."
+			redMessage "Please check the Masteruser inside this Script or the User Shell rights."
 			FINISHED
 		fi
 		if [ ! -d "$ARK_MOD_PATH" ]; then
-			redMessage "masteraddons Directory not found!"
+			redMessage "Masteraddons Directory not found!"
 			FINISHED
 		fi
 		if [ ! -f "$STEAM_CMD_PATH" ]; then
@@ -104,52 +108,49 @@ USER_CHECK() {
 }
 
 UPDATER_CHECK() {
+	yellowMessage "Checking for the latest Updater Script"
 	LATEST_UPDATER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
-	if [ ! "$LATEST_MANAGER_VERSION" = "" ]; then
-		if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
-			yellowMessage "Check, is a old Updater Script installed."
+	sleep 3
 
-			if [ "`printf "${LATEST_UPDATER_VERSION}\n${LOCAL_UPDATER_VERSION}" | sort -V | tail -n 1`" != "$LOCAL_UPDATER_VERSION" ]; then
-				redMessage "A old update script is found and updated..."
-				rm -rf /root/ark_mod_updater.sh
-				sleep 3
-				echo
-				yellowMessage "Downloading the last stable Updater Script from Github"
-				yellowMessage "Please wait..."
-				wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
-				tar zxf /tmp/"$LATEST_UPDATER_VERSION".tar.gz -C /tmp/
-				rm -rf /tmp/"$LATEST_UPDATER_VERSION".tar.gz
-				mv /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"/ark_mod_updater.sh /root/
-				rm -rf /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"
+	if [ ! "$LATEST_UPDATER_VERSION" = "" ]; then
+		if [ "`printf "${LATEST_UPDATER_VERSION}\n${CURRENT_UPDATER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_UPDATER_VERSION" ]; then
+			redMessage "A old Update Script is found and will Updated"
+			rm -rf /root/ark_mod_updater.sh
+			sleep 3
+			echo
+			yellowMessage "Downloading the last stable Updater Script from Github"
+			yellowMessage "Please wait..."
+			wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
+			tar zxf /tmp/"$LATEST_UPDATER_VERSION".tar.gz -C /tmp/
+			rm -rf /tmp/"$LATEST_UPDATER_VERSION".tar.gz
+			mv /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"/ark_mod_updater.sh /root/
+			rm -rf /tmp/Easy-WI-ARK-Mod-Updater-"$LATEST_UPDATER_VERSION"
 
-				if [ -f /root/ark_mod_updater.sh ]; then
-					chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
-					sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+			if [ -f /root/ark_mod_updater.sh ]; then
+				chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
+				sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
 
-					if [ ! "$EMAIL_TO" = "" ]; then
-						sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
-					fi
-					sleep 3
-					greenMessage "Done."
-					echo
-				else
-					redMessage "Updater Script downloading failed."
-					redMessage "Please download the last release under https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases"
-					redMessage "Installation canceled!"
-					FINISHED
+				if [ ! "$EMAIL_TO" = "" ]; then
+					sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
 				fi
-			else
-				greenMessage "Updater Script is up-to-date."
 				sleep 3
+				greenMessage "Done"
+				sleep 5
 				echo
+			else
+				redMessage "Updater Script downloading failed"
+				redMessage "Please download the last release under https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases"
+				redMessage "Installation canceled!"
+				FINISHED
 			fi
 		else
-			redMessage "Please install a Mod first, before you install/update the Updater Script!"
-			FINISHED
+			greenMessage "You are using the Up-to-Date Updater Version ${CURRENT_UPDATER_VERSION}"
+			sleep 5
+			echo
 		fi
 	else
 		echo
-		redMessage "Could not detect last manager version!"
+		redMessage "Could not detect last Updater Version!"
 		FINISHED
 	fi
 }
@@ -246,7 +247,6 @@ INSTALL_ALL() {
 
 UPDATE() {
 	echo; echo
-	UPDATER_CHECK
 
 	unset ARK_MOD_ID
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
@@ -301,7 +301,6 @@ UPDATE() {
 
 UPDATER_INSTALL() {
 	echo; echo
-	UPDATER_CHECK
 
 	yellowMessage "Check, is Cronjob already installed."
 	if [ ! -f /etc/cron.d/ark_mod_updater ]; then
@@ -536,7 +535,7 @@ MOD_DOWNLOAD() {
 		SPINNER &
 		RESULT=$(su "$MASTERSERVER_USER" -c "$STEAM_CMD_PATH +login anonymous +workshop_download_item $ARK_APP_ID $MODID validate +quit" | egrep "Success" | cut -c 1-7)
 
-		if [ "$RESULT" = "Success" ]; then
+		if [ "$RESULT" = "Success" ] && [ -d "$STEAM_CONTENT_PATH"/"$MODID" ]; then
 			if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
 				local TMP_ID=$(cat "$TMP_PATH"/ark_update_failure.log | grep "$MODID")
 				if [ "$TMP_ID" = "" ]; then
@@ -560,7 +559,7 @@ MOD_DOWNLOAD() {
 				if [ "$TMP_ID" = "" ]; then
 					echo "$MODID" >> "$TMP_PATH"/ark_update_failure.log
 				fi
-				sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log
+				sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log >/dev/null 2>&1
 				redMessage "FAILURE"
 				cyanonelineMessage "Connection Attempts:   "; whiteMessage "$COUNTER"
 				break
@@ -836,10 +835,10 @@ CLEANFILES() {
 		rm -rf "$TMP_PATH"/ark_custom_appid_tmp.log
 	fi
 	if [ ! "$MODE" = "INSTALLALL" ]; then
-		rm -rf "$STEAM_MASTER_PATH"/steamapps/workshop/downloads/state_"$ARK_APP_ID"_*
-		rm -rf "$STEAM_MASTER_PATH"/steamapps/workshop/appworkshop_"$ARK_APP_ID".acf
+		rm -rf "$STEAM_WORKSHOP_PATH"/downloads/state_"$ARK_APP_ID"_*
+		rm -rf "$STEAM_WORKSHOP_PATH"/appworkshop_"$ARK_APP_ID".acf
 	else
-		rm -rf "$STEAM_MASTER_PATH"/steamapps/workshop
+		rm -rf "$STEAM_WORKSHOP_PATH"
 	fi
 	if [ -f "$TMP_PATH"/ark_spinner ]; then
 		rm -rf "$TMP_PATH"/ark_spinner
