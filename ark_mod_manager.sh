@@ -28,9 +28,6 @@ CURRENT_MANAGER_VERSION="2.5.6"
 ARK_APP_ID="346110"
 MASTER_PATH="/home/$MASTERSERVER_USER"
 STEAM_CMD_PATH="$MASTER_PATH/masterserver/steamCMD/steamcmd.sh"
-STEAM_WORKSHOP_PATH="$MASTER_PATH/Steam/steamapps/workshop"
-STEAM_CONTENT_PATH="$STEAM_WORKSHOP_PATH/content/$ARK_APP_ID"
-STEAM_DOWNLOAD_PATH="$STEAM_WORKSHOP_PATH/downloads/$ARK_APP_ID"
 ARK_MOD_PATH="$MASTER_PATH/masteraddons"
 EASYWI_XML_FILES="$MASTER_PATH/easywi-xml-files"
 LOG_PATH="$MASTER_PATH/logs"
@@ -527,13 +524,18 @@ MOD_DOWNLOAD() {
 
 	COUNTER=0
 	while [ $COUNTER -lt 4 ]; do
-		if [ ! -d "$STEAM_CONTENT_PATH" ] || [ ! -d "$STEAM_DOWNLOAD_PATH" ]; then
-			su "$MASTERSERVER_USER" -c "mkdir -p "$STEAM_CONTENT_PATH""
-			su "$MASTERSERVER_USER" -c "mkdir -p "$STEAM_DOWNLOAD_PATH""
-		fi
 		touch "$TMP_PATH"/ark_spinner
 		SPINNER &
 		RESULT=$(su "$MASTERSERVER_USER" -c "$STEAM_CMD_PATH +login anonymous +workshop_download_item $ARK_APP_ID $MODID validate +quit" | egrep "Success" | cut -c 1-7)
+
+		if [ -d $MASTER_PATH/Steam/steamapps/workshop/content/$ARK_APP_ID/$MODID ]; then
+			STEAM_WORKSHOP_PATH="$MASTER_PATH/Steam/steamapps/workshop"
+		else
+			STEAM_WORKSHOP_PATH="$MASTER_PATH/masterserver/steamCMD/steamapps/workshop"
+		fi
+
+		STEAM_CONTENT_PATH="$STEAM_WORKSHOP_PATH/content/$ARK_APP_ID"
+		STEAM_DOWNLOAD_PATH="$STEAM_WORKSHOP_PATH/downloads/$ARK_APP_ID"
 
 		if [ "$RESULT" = "Success" ] && [ -d "$STEAM_CONTENT_PATH"/"$MODID" ]; then
 			if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
@@ -829,16 +831,9 @@ SPINNER() {
 }
 
 CLEANFILES() {
-	rm -rf "$STEAM_CONTENT_PATH"
-	rm -rf "$STEAM_DOWNLOAD_PATH"
+	rm -rf "$STEAM_WORKSHOP_PATH"
 	if [ -f "$TMP_PATH"/ark_custom_appid_tmp.log ]; then
 		rm -rf "$TMP_PATH"/ark_custom_appid_tmp.log
-	fi
-	if [ ! "$MODE" = "INSTALLALL" ]; then
-		rm -rf "$STEAM_WORKSHOP_PATH"/downloads/state_"$ARK_APP_ID"_*
-		rm -rf "$STEAM_WORKSHOP_PATH"/appworkshop_"$ARK_APP_ID".acf
-	else
-		rm -rf "$STEAM_WORKSHOP_PATH"
 	fi
 	if [ -f "$TMP_PATH"/ark_spinner ]; then
 		rm -rf "$TMP_PATH"/ark_spinner
