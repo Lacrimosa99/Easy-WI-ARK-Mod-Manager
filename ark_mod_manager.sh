@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_MANAGER_VERSION="2.5.6"
+CURRENT_MANAGER_VERSION="2.5.7"
 ARK_APP_ID="346110"
 MASTER_PATH="/home/$MASTERSERVER_USER"
 STEAM_CMD_PATH="$MASTER_PATH/masterserver/steamCMD/steamcmd.sh"
@@ -449,7 +449,7 @@ UNINSTALL_ALL() {
 
 MOD_NAME_CHECK() {
 	ARK_MOD_NAME_NORMAL=$(curl -s "http://steamcommunity.com/sharedfiles/filedetails/?id=$MODID" | sed -n 's|^.*<div class="workshopItemTitle">\([^<]*\)</div>.*|\1|p')
-	ARK_LAST_CHANGES_DATE=$(curl -s "https://steamcommunity.com/sharedfiles/filedetails/changelog/$MODID" | sed -n 's|^.*Update:\([^<]*\)</div>.*|\1|p' | head -n1 | cut -c 2-7 | sed 's/,//;s/[ \t]*$//')
+	ARK_LAST_CHANGES_DATE=$(curl -s "https://steamcommunity.com/sharedfiles/filedetails/changelog/$MODID" | sed -n 's|^.*Update: \([^<]*\)</div>.*|\1|p' | head -n1 | tr -d '\t')
 	ARK_MOD_NAME_TMP=$(echo "$ARK_MOD_NAME_NORMAL" | egrep "Difficulty|ItemTweaks|NPC")
 	if [ ! "$ARK_MOD_NAME_TMP" = "" ]; then
 		ARK_MOD_NAME=$(echo "$ARK_MOD_NAME_NORMAL" | tr "/" "-" | tr "[A-Z]" "[a-z]" | tr " " "-" | tr -d ".,!()[]" | sed "s/-updated//;s/+/-plus/;s/+/plus/" | sed 's/\\/-/;s/\\/-/;s/---/-/')
