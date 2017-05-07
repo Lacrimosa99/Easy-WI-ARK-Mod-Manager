@@ -67,8 +67,8 @@ VERSION_CHECK() {
 
 	if [ ! "$LATEST_MANAGER_VERSION" = "" ]; then
 		if [ "`printf "${LATEST_MANAGER_VERSION}\n${CURRENT_MANAGER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_MANAGER_VERSION" ]; then
-			redMessage "You are using the old manager script version ${CURRENT_MANAGER_VERSION}."
-			redMessage "Please upgrade to version ${LATEST_MANAGER_VERSION} and retry."
+			redMessage "You are using a old Manager Script Version ${CURRENT_MANAGER_VERSION}."
+			redMessage "Please upgrade to Version ${LATEST_MANAGER_VERSION} and retry."
 			redMessage "Download Link: https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases"
 			FINISHED
 		else
@@ -77,7 +77,7 @@ VERSION_CHECK() {
 			echo
 		fi
 	else
-		redMessage "Could not detect last Manager Version!"
+		redMessage "Could not detect on Github the last Manager Script Version!"
 		FINISHED
 	fi
 }
