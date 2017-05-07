@@ -10,6 +10,7 @@
 - curl<br>
 - wget<br>
 - sudo<br>
+- Easy-WI Database<br>
 
 ---
 
