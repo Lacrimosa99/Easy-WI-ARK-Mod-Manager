@@ -17,7 +17,7 @@
 <h4>Which functions are available in Ark Mod Manager?</h4>
 
 - Install a single ARK Mod ID<br>
-- Install predefined ARK Mods (IDs are inside the "ark_mod_downloader.sh" Script)<br>
+- Install predefined ARK Mods (IDs are inside the "ark_mod_manager.sh" Script)<br>
 - Update all installed ARK Mods IDs<br>
 - Install Updater Script + Cronjob (for automatically Update)<br>
 - Uninstall Updater Script + Crontab<br>
