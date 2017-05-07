@@ -233,7 +233,18 @@ INSTALL() {
 }
 
 INSTALL_ALL() {
-	echo; echo
+	echo; echo; tput cnorm
+	printf "Really install all ModIDs [Y/N]?: "; read -n1 ANSWER
+	tput civis
+	case $ANSWER in
+		y|Y|j|J)
+			echo;;
+		n|N)
+			FINISHED;;
+		*)
+			ERROR; INSTALL_ALL;;
+	esac
+
 	if [ ! -f "$MOD_LOG" ] && [ ! -f "$MOD_BACKUP_LOG" ]; then
 		QUESTION7
 		yellowMessage "Please wait..."
@@ -340,7 +351,18 @@ UPDATER_INSTALL() {
 }
 
 UPDATER_UNINSTALL() {
-	echo; echo
+	echo; echo; tput cnorm
+	printf "Really uninstall Updater [Y/N]?: "; read -n1 ANSWER
+	tput civis
+	case $ANSWER in
+		y|Y|j|J)
+			echo;;
+		n|N)
+			FINISHED;;
+		*)
+			ERROR; UPDATER_UNINSTALL;;
+	esac
+
 	if [ -f /etc/cron.d/ark_mod_updater ]; then
 		rm -rf /etc/cron.d/ark_mod_updater
 
@@ -432,7 +454,18 @@ UNINSTALL() {
 }
 
 UNINSTALL_ALL() {
-	echo; echo
+	echo; echo; tput cnorm
+	printf "Really uninstall all Mod IDs [Y/N]?: "; read -n1 ANSWER
+	tput civis
+	case $ANSWER in
+		y|Y|j|J)
+			echo;;
+		n|N)
+			FINISHED;;
+		*)
+			ERROR; UNINSTALL_ALL;;
+	esac
+
 	if [ -f "$MOD_LOG" ]; then
 		local DELETE_MOD=$(cat "$MOD_LOG" && if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi | cut -c 1-9 )
 
@@ -458,6 +491,7 @@ UNINSTALL_ALL() {
 		redMessage "Delete all exist ARK Mod Folder by Hand."
 		FINISHED
 	fi
+
 }
 
 MOD_NAME_CHECK() {
@@ -717,6 +751,7 @@ DATABASE_CONNECTION() {
 						DATABASE_LOGIN_CHECK=$(mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "exit")
 						if [ ! "$DATABASE_LOGIN_CHECK" = "0" ]; then
 							mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "USE $DATABASE_NAME; $DATABASE_STRING"
+							echo
 							greenMessage "Database entry successfully entered"
 							echo; echo
 						else
@@ -736,14 +771,10 @@ DATABASE_CONNECTION() {
 				DATABASE_LOGIN_CHECK=$(mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "exit")
 				if [ ! "$DATABASE_LOGIN_CHECK" = "0" ]; then
 					mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "USE $DATABASE_NAME; $DATABASE_STRING"
-					greenMessage "Database entry successfully entered"
-					echo; echo
 				else
 					echo; echo
 					redMessage "Database Login failure!"
-					echo
-					yellowMessage "You must self Import the XML Files into your Webinterface"
-					CREATE_WI_IMPORT_FILE
+					FINISHED
 				fi
 			fi
 		else
