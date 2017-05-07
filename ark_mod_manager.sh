@@ -205,22 +205,29 @@ INSTALL() {
 	unset ARK_MOD_ID
 	touch "$TMP_PATH"/ark_mod_updater_status
 	tput cnorm
-	printf "Please enter the ModID: "; read -n9 ARK_MOD_ID
-	tput civis; echo
+	printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
+	tput civis
 
 	if [ ! "$ARK_MOD_ID" = "" ]; then
 		QUESTION4
-		INSTALL_CHECK
-		if [ -f "$MOD_BACKUP_LOG" ] && [ "$ARK_MOD_NAME_DEPRECATED" = "" ]; then
-			rm -rf "$MOD_BACKUP_LOG"
+		if [ ! -d "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" ]; then
+			INSTALL_CHECK
+			if [ -f "$MOD_BACKUP_LOG" ] && [ "$ARK_MOD_NAME_DEPRECATED" = "" ]; then
+				rm -rf "$MOD_BACKUP_LOG"
+			fi
+			rm -rf "$TMP_PATH"/ark_mod_updater_status
+			CLEANFILES
+			QUESTION1
+		else
+			echo
+			redMessage "Mod "$ARK_MOD_NAME_NORMAL" is already installed."
+			redMessage "Installation canceled!"
+			QUESTION1
 		fi
-		rm -rf "$TMP_PATH"/ark_mod_updater_status
-		CLEANFILES
-		QUESTION1
 	else
 		rm -rf "$TMP_PATH"/ark_mod_updater_status
 		ERROR
-		QUESTION2
+		INSTALL
 	fi
 }
 
@@ -236,7 +243,7 @@ INSTALL_ALL() {
 		cat "$MOD_LOG" | sort
 		FINISHED
 	else
-		redMessage "This option is for first mod installation only."
+		redMessage "This Option is for first Mod installation only."
 		redMessage "Installation canceled!"
 		FINISHED
 	fi
@@ -375,21 +382,23 @@ UNINSTALL() {
 		cat "$MOD_LOG" && if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi | sort
 
 		echo; echo;	tput cnorm
-		printf "What ModID you want to uninstall?: "; read -n9 ARK_MOD_ID
-		tput civis; echo
-
+		printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
+		tput civis
 		QUESTION4
 
 		if [ ! "$ARK_MOD_ID" = "" ]; then
-			local TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID")
-			local TMP_NAME2=$(cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID")
-			local TMP_PATH=$(ls -la "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID")
+			local TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID" >/dev/null 2>&1 )
+			local TMP_NAME2=$(cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID" >/dev/null 2>&1 )
+			local TMP_PATH=$(ls -la "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID" >/dev/null 2>&1 )
 			if [ ! "$TMP_NAME" = "" -o ! "$TMP_NAME2" = "" -o ! "$TMP_PATH" = "" ]; then
 				rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" >/dev/null 2>&1
 				rm -rf "$EASYWI_XML_FILES"/"$TMP_NAME".xml >/dev/null 2>&1
+				rm -rf "$MOD_LAST_VERSION"/ark_mod_id_"$ARK_MOD_ID".txt >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG" >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_BACKUP_LOG" >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_NO_UPDATE_LOG" >/dev/null 2>&1
+				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_$DELETE'")
+				DATABASE_CONNECTION
 				sleep 3
 				local CHECK_LOG=$(cat "$MOD_NO_UPDATE_LOG")
 				if [ "$CHECK_LOG" = "" ]; then
@@ -429,8 +438,11 @@ UNINSTALL_ALL() {
 		if [ ! "$DELETE_MOD" = "" ]; then
 			for DELETE in ${DELETE_MOD[@]}; do
 				rm -rf "$ARK_MOD_PATH"/ark_"$DELETE" >/dev/null 2>&1
+				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_$DELETE'")
+				DATABASE_CONNECTION
 			done
 			rm -rf "$EASYWI_XML_FILES" >/dev/null 2>&1
+			rm -rf "$MOD_LAST_VERSION"/ark_mod_id_"$ARK_MOD_ID".txt >/dev/null 2>&1
 		fi
 
 		if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
@@ -448,7 +460,7 @@ UNINSTALL_ALL() {
 }
 
 MOD_NAME_CHECK() {
-	ARK_MOD_NAME_NORMAL=$(curl -s "http://steamcommunity.com/sharedfiles/filedetails/?id=$MODID" | sed -n 's|^.*<div class="workshopItemTitle">\([^<]*\)</div>.*|\1|p')
+	ARK_MOD_NAME_NORMAL=$(curl -s "http://steamcommunity.com/sharedfiles/filedetails/?id=$MODID" | sed -n 's|^.*<div class="workshopItemTitle">\([^<]*\)</div>.*|\1|p' | tr -d "\t,';=")
 	ARK_LAST_CHANGES_DATE=$(curl -s "https://steamcommunity.com/sharedfiles/filedetails/changelog/$MODID" | sed -n 's|^.*Update: \([^<]*\)</div>.*|\1|p' | head -n1 | tr -d ',\t')
 	ARK_MOD_NAME_TMP=$(echo "$ARK_MOD_NAME_NORMAL" | egrep "Difficulty|ItemTweaks|NPC")
 	if [ ! "$ARK_MOD_NAME_TMP" = "" ]; then
@@ -477,9 +489,8 @@ INSTALL_CHECK() {
 						if [ "$MOD_TMP_NAME" = "" ]; then
 							echo "$MODID" >> "$MOD_LOG"
 							if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ]; then
-								if [ ! -f "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml ]; then
-									CREATE_WI_IMPORT_FILE
-								fi
+								DATABASE_STRING=$(echo "INSERT INTO addons (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', '', '', '0', '0')")
+								DATABASE_CONNECTION
 							elif [ "$MODE" = "UPDATE" ]; then
 								sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log
 							fi
@@ -490,8 +501,9 @@ INSTALL_CHECK() {
 						fi
 						if [ "$MOD_TMP_NAME" = "" ]; then
 							echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
-							if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ] && [ ! -f "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml ]; then
-									CREATE_WI_IMPORT_FILE
+							if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ]; then
+								DATABASE_STRING=$(echo "INSERT INTO addons (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', '', '', '0', '0')")
+								DATABASE_CONNECTION
 							fi
 						fi
 					fi
@@ -676,6 +688,83 @@ DECOMPRESS() {
 	fi
 }
 
+DATABASE_CONNECTION() {
+	if [ ! "`ps fax | grep 'mysqld' | grep -v 'grep'`" == "" ]; then
+		if [ ! $(locate htdocs/stuff/config.php) = "" ]; then
+			DATABASE_CONFIG_PATH=$(locate htdocs/stuff/config.php)
+			DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
+			DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'host' | awk '{print $3}' | tr -d "\r';")
+			DATABASE_NAME=$(echo "$DATABASE_TMP" | grep 'db' | awk '{print $3}' | tr -d "\r';")
+			DATABASE_USER=$(echo "$DATABASE_TMP" | grep 'user' | awk '{print $3}' | tr -d "\r';")
+			DATABASE_PW=$(echo "$DATABASE_TMP" | grep 'pwd' | awk '{print $3}' | tr -d "\r';")
+
+			if [ "$DATABASE_HOST" = "localhost" ]; then
+				unset DATABASE_HOST
+				DATABASE_HOST="127.0.0.1"
+			fi
+
+			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
+				echo
+				cyanonelineMessage "Database Host: "; whiteMessage "$DATABASE_HOST"
+				cyanonelineMessage "Database Name: "; whiteMessage "$DATABASE_NAME"
+				cyanonelineMessage "Database User: "; whiteMessage "$DATABASE_USER"
+				echo; echo;	tput cnorm
+				printf "Database connection details correct [Y/N]?: "; read -n1 ANSWER
+				tput civis
+				case $ANSWER in
+					y|Y|j|J)
+						DATABASE_LOGIN_CHECK=$(mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "exit")
+						if [ ! "$DATABASE_LOGIN_CHECK" = "0" ]; then
+							mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "USE $DATABASE_NAME; $DATABASE_STRING"
+							greenMessage "Database entry successfully entered"
+							echo; echo
+						else
+							echo; echo;	redMessage "Database Login failure!"
+							echo
+							yellowMessage "You must self Import the XML Files into your Webinterface"
+							CREATE_WI_IMPORT_FILE
+						fi;;
+					n|N)
+						echo; echo
+						yellowMessage "You must self Import the XML Files into your Webinterface"
+						CREATE_WI_IMPORT_FILE;;
+					*)
+						ERROR; DATABASE_CONNECTION;;
+				esac
+			else
+				DATABASE_LOGIN_CHECK=$(mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "exit")
+				if [ ! "$DATABASE_LOGIN_CHECK" = "0" ]; then
+					mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "USE $DATABASE_NAME; $DATABASE_STRING"
+					greenMessage "Database entry successfully entered"
+					echo; echo
+				else
+					echo; echo
+					redMessage "Database Login failure!"
+					echo
+					yellowMessage "You must self Import the XML Files into your Webinterface"
+					CREATE_WI_IMPORT_FILE
+				fi
+			fi
+		else
+			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
+				echo; echo
+				redMessage "Easy-WI Webinterface Database Config not Found!"
+				echo
+				yellowMessage "You must self Import the XML Files into your Webinterface"
+				CREATE_WI_IMPORT_FILE
+			fi
+		fi
+	else
+		if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
+			echo; echo
+			redMessage "Database Server not Online!"
+			echo
+			yellowMessage "You must self Import the XML Files into your Webinterface"
+			CREATE_WI_IMPORT_FILE
+		fi
+	fi
+}
+
 CREATE_WI_IMPORT_FILE() {
 	if [ ! -d "$EASYWI_XML_FILES" ]; then
 		mkdir "$EASYWI_XML_FILES"
@@ -790,7 +879,7 @@ QUESTION6() {
 		n|N)
 			continue;;
 		*)
-			ERROR; QUESTION4;;
+			ERROR; QUESTION6;;
 	esac
 }
 
@@ -909,7 +998,6 @@ whiteonelineMessage() {
 }
 
 ### Start ###
-
 if [ "$DEBUG" == "ON" ]; then
 	set -x
 fi
