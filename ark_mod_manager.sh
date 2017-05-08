@@ -407,25 +407,25 @@ UNINSTALL() {
 		echo; echo;	tput cnorm
 		printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
 		tput civis
-		QUESTION4
 
 		if [ ! "$ARK_MOD_ID" = "" ]; then
-			local TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID" >/dev/null 2>&1 )
-			local TMP_NAME2=$(cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID" >/dev/null 2>&1 )
-			local TMP_PATH=$(ls -la "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID" >/dev/null 2>&1 )
-			if [ ! "$TMP_NAME" = "" -o ! "$TMP_NAME2" = "" -o ! "$TMP_PATH" = "" ]; then
+			local UNINSTALL_TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID")
+			local UNINSTALL_TMP_NAME2=$(if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID"; fi)
+			local UNINSTALL_TMP_PATH=$(ls "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID")
+			if [ ! "$UNINSTALL_TMP_NAME" = "" -a ! "$UNINSTALL_TMP_PATH" = "" ] || [ ! "$UNINSTALL_TMP_NAME2" = "" -a ! "$UNINSTALL_TMP_PATH" = "" ]; then
+				QUESTION4
 				rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" >/dev/null 2>&1
-				rm -rf "$EASYWI_XML_FILES"/"$TMP_NAME".xml >/dev/null 2>&1
+				rm -rf "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml >/dev/null 2>&1
 				rm -rf "$MOD_LAST_VERSION"/ark_mod_id_"$ARK_MOD_ID".txt >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG" >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_BACKUP_LOG" >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_NO_UPDATE_LOG" >/dev/null 2>&1
-				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_$DELETE'")
+				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_$ARK_MOD_ID'")
 				DATABASE_CONNECTION
 				sleep 3
-				local CHECK_LOG=$(cat "$MOD_NO_UPDATE_LOG")
-				if [ "$CHECK_LOG" = "" ]; then
-					rm -rf "$MOD_NO_UPDATE_LOG"
+				local UNINSTALL_TMP_NAME3=$(if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi)
+				if [ "$UNINSTALL_TMP_NAME3" = "" ]; then
+					rm -rf "$MOD_NO_UPDATE_LOG" >/dev/null 2>&1
 				fi
 				echo
 				greenMessage "ModID $ARK_MOD_ID is successfully uninstalled."
@@ -440,13 +440,14 @@ UNINSTALL() {
 					QUESTION2
 				fi
 			else
-				ERROR; UNINSTALL
+				redMessage "No ModID $ARK_MOD_ID with Mod Name $ARK_MOD_NAME_NORMAL found!"
+				redMessage "Uninstalling canceled."
+				FINISHED
 			fi
 		else
 			ERROR; UNINSTALL
 		fi
 	else
-		echo
 		redMessage 'File "ark_mod_id.log" in /logs not found!'
 		redMessage "Uninstall canceled!"
 		FINISHED
@@ -472,7 +473,7 @@ UNINSTALL_ALL() {
 		if [ ! "$DELETE_MOD" = "" ]; then
 			for DELETE in ${DELETE_MOD[@]}; do
 				rm -rf "$ARK_MOD_PATH"/ark_"$DELETE" >/dev/null 2>&1
-				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_$DELETE'")
+				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_"$DELETE"'")
 				DATABASE_CONNECTION
 			done
 			rm -rf "$EASYWI_XML_FILES" >/dev/null 2>&1
