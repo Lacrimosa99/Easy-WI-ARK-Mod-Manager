@@ -11,6 +11,7 @@
 - wget<br>
 - sudo<br>
 - Easy-WI Database<br>
+- E-Mail Server (for Updater)<br>
 
 ---
 
