@@ -444,7 +444,8 @@ UNINSTALL() {
 					QUESTION2
 				fi
 			else
-				redMessage "No ModID $ARK_MOD_ID with Mod Name $ARK_MOD_NAME_NORMAL found!"
+				echo
+				redMessage "Unknown ARK MOD ID!"
 				redMessage "Uninstalling canceled."
 				FINISHED
 			fi
