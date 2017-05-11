@@ -397,12 +397,16 @@ UPDATER_UNINSTALL() {
 }
 
 UNINSTALL() {
-	echo; echo
+	echo; echo; echo
 	if [ -f "$MOD_LOG" ]; then
 		unset ARK_MOD_ID
 		yellowMessage "List of installed Mods:"
 		echo
-		cat "$MOD_LOG" && if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi | sort
+		ARK_MOD_LIST=$(cat "$MOD_LOG" && if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi | sort)
+		for MODID in ${ARK_MOD_LIST[@]}; do
+			MOD_NAME_CHECK
+			echo "$MODID - $ARK_MOD_NAME_NORMAL"
+		done
 
 		echo; echo;	tput cnorm
 		printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
