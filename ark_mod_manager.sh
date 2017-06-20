@@ -65,7 +65,7 @@ VERSION_CHECK() {
 	LATEST_MANAGER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9]\.[0-9])'`
 	sleep 3
 
-	if [ ! "$LATEST_MANAGER_VERSION" = "" ]; then
+	if [ "$LATEST_MANAGER_VERSION" != "" ]; then
 		if [ "`printf "${LATEST_MANAGER_VERSION}\n${CURRENT_MANAGER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_MANAGER_VERSION" ]; then
 			redMessage "You are using a old Manager Script Version ${CURRENT_MANAGER_VERSION}."
 			redMessage "Please upgrade to Version ${LATEST_MANAGER_VERSION} and retry."
@@ -77,16 +77,16 @@ VERSION_CHECK() {
 			echo
 		fi
 	else
-		redMessage "Could not detect on Github the last Manager Script Version!"
+		redMessage "Could not detect in Github the last Manager Script Version!"
 		FINISHED
 	fi
 }
 
 USER_CHECK() {
 	echo
-	if [ ! "$MASTERSERVER_USER" = "" ]; then
+	if [ "$MASTERSERVER_USER" != "" ]; then
 		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER" | head -n1)
-		if ([ ! "$USER_CHECK" == "/home/$MASTERSERVER_USER:/bin/bash" -a ! "$USER_CHECK" == "/home/$MASTERSERVER_USER/:/bin/bash" ]); then
+		if ([ "$USER_CHECK" != "/home/$MASTERSERVER_USER:/bin/bash" -a "$USER_CHECK" != "/home/$MASTERSERVER_USER/:/bin/bash" ]); then
 			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
 			redMessage "Please check the Masteruser inside this Script or the User Shell rights."
 			FINISHED
@@ -110,7 +110,7 @@ UPDATER_CHECK() {
 	LATEST_UPDATER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
 	sleep 3
 
-	if [ ! "$LATEST_UPDATER_VERSION" = "" ]; then
+	if [ "$LATEST_UPDATER_VERSION" != "" ]; then
 		if [ "`printf "${LATEST_UPDATER_VERSION}\n${CURRENT_UPDATER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_UPDATER_VERSION" ]; then
 			redMessage "A old Update Script is found and will Updated"
 			rm -rf /root/ark_mod_updater.sh
@@ -128,7 +128,7 @@ UPDATER_CHECK() {
 				chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
 				sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
 
-				if [ ! "$EMAIL_TO" = "" ]; then
+				if [ "$EMAIL_TO" != "" ]; then
 					sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
 				fi
 				sleep 3
@@ -209,7 +209,7 @@ INSTALL() {
 	printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
 	tput civis
 
-	if [ ! "$ARK_MOD_ID" = "" ]; then
+	if [ "$ARK_MOD_ID" != "" ]; then
 		QUESTION4
 		if [ ! -d "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" ]; then
 			INSTALL_CHECK
@@ -412,11 +412,11 @@ UNINSTALL() {
 		printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
 		tput civis
 
-		if [ ! "$ARK_MOD_ID" = "" ]; then
+		if [ "$ARK_MOD_ID" != "" ]; then
 			local UNINSTALL_TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID")
 			local UNINSTALL_TMP_NAME2=$(if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID"; fi)
 			local UNINSTALL_TMP_PATH=$(ls "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID")
-			if [ ! "$UNINSTALL_TMP_NAME" = "" -a ! "$UNINSTALL_TMP_PATH" = "" ] || [ ! "$UNINSTALL_TMP_NAME2" = "" -a ! "$UNINSTALL_TMP_PATH" = "" ]; then
+			if [ "$UNINSTALL_TMP_NAME" != "" -a "$UNINSTALL_TMP_PATH" != "" ] || [ "$UNINSTALL_TMP_NAME2" != "" -a "$UNINSTALL_TMP_PATH" != "" ]; then
 				QUESTION4
 				rm -rf "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" >/dev/null 2>&1
 				rm -rf "$EASYWI_XML_FILES"/"$ARK_MOD_NAME".xml >/dev/null 2>&1
@@ -435,7 +435,7 @@ UNINSTALL() {
 				greenMessage "ModID $ARK_MOD_ID is successfully uninstalled."
 				echo
 				local CHECK_LOG=$(cat "$MOD_LOG")
-				if [ ! "$CHECK_LOG" = "" ]; then
+				if [ "$CHECK_LOG" != "" ]; then
 					QUESTION3
 				else
 					redMessage 'No more installed Mod IDs in "ark_mod_id.log" found!'
@@ -475,7 +475,7 @@ UNINSTALL_ALL() {
 	if [ -f "$MOD_LOG" ]; then
 		local DELETE_MOD=$(cat "$MOD_LOG" && if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi | cut -c 1-9 )
 
-		if [ ! "$DELETE_MOD" = "" ]; then
+		if [ "$DELETE_MOD" != "" ]; then
 			for DELETE in ${DELETE_MOD[@]}; do
 				rm -rf "$ARK_MOD_PATH"/ark_"$DELETE" >/dev/null 2>&1
 				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_"$DELETE"'")
@@ -504,7 +504,7 @@ MOD_NAME_CHECK() {
 	ARK_MOD_NAME_NORMAL=$(curl -s "http://steamcommunity.com/sharedfiles/filedetails/?id=$MODID" | sed -n 's|^.*<div class="workshopItemTitle">\([^<]*\)</div>.*|\1|p' | tr -d "\t,';=")
 	ARK_LAST_CHANGES_DATE=$(curl -s "https://steamcommunity.com/sharedfiles/filedetails/changelog/$MODID" | sed -n 's|^.*Update: \([^<]*\)</div>.*|\1|p' | head -n1 | tr -d ',\t')
 	ARK_MOD_NAME_TMP=$(echo "$ARK_MOD_NAME_NORMAL" | egrep "Difficulty|ItemTweaks|NPC")
-	if [ ! "$ARK_MOD_NAME_TMP" = "" ]; then
+	if [ "$ARK_MOD_NAME_TMP" != "" ]; then
 		ARK_MOD_NAME=$(echo "$ARK_MOD_NAME_NORMAL" | tr "/" "-" | tr "[A-Z]" "[a-z]" | tr " " "-" | tr -d ".,!()[]" | sed "s/-updated//;s/+/-plus/;s/+/plus/" | sed 's/\\/-/;s/\\/-/;s/---/-/')
 	else
 		ARK_MOD_NAME=$(echo "$ARK_MOD_NAME_NORMAL" | tr "/" "-" | tr "[A-Z]" "[a-z]" | tr " " "-" | tr -d ".,+!()[]" | sed "s/-updated//;s/-v[0-9][0-9]*//;s/-[0-9][0-9]*//" | sed 's/\\/-/;s/\\/-/;s/---/-/')
@@ -515,7 +515,7 @@ MOD_NAME_CHECK() {
 INSTALL_CHECK() {
 	for MODID in ${ARK_MOD_ID[@]}; do
 		MOD_NAME_CHECK
-		if [ ! "$ARK_MOD_NAME" = "" ] && [ ! "$ARK_MOD_NAME_NORMAL" = "" ]; then
+		if [ "$ARK_MOD_NAME" != "" ] && [ "$ARK_MOD_NAME_NORMAL" != "" ]; then
 			MOD_DOWNLOAD
 			if [ -d "$STEAM_CONTENT_PATH"/"$MODID" ]; then
 				if [ -d "$ARK_MOD_PATH"/ark_"$MODID" ]; then
@@ -730,9 +730,10 @@ DECOMPRESS() {
 }
 
 DATABASE_CONNECTION() {
-	if [ ! "`ps fax | grep 'mysqld' | grep -v 'grep'`" == "" ]; then
-		if [ ! $(locate htdocs/stuff/config.php) = "" ]; then
-			DATABASE_CONFIG_PATH=$(locate htdocs/stuff/config.php)
+	updatedb
+	if [ "`ps fax | grep 'mysqld' | grep -v 'grep'`" != "" ]; then
+		DATABASE_CONFIG_PATH=$(locate /stuff/config.php)
+		if [ $DATABASE_CONFIG_PATH != "" ]; then
 			DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
 			DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'host' | awk '{print $3}' | tr -d "\r';")
 			DATABASE_NAME=$(echo "$DATABASE_TMP" | grep 'db' | awk '{print $3}' | tr -d "\r';")
@@ -755,7 +756,7 @@ DATABASE_CONNECTION() {
 				case $ANSWER in
 					y|Y|j|J)
 						DATABASE_LOGIN_CHECK=$(mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "exit")
-						if [ ! "$DATABASE_LOGIN_CHECK" = "0" ]; then
+						if [ "$DATABASE_LOGIN_CHECK" != "0" ]; then
 							mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "USE $DATABASE_NAME; $DATABASE_STRING"
 							echo
 							greenMessage "Database entry successfully entered"
@@ -775,7 +776,7 @@ DATABASE_CONNECTION() {
 				esac
 			else
 				DATABASE_LOGIN_CHECK=$(mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "exit")
-				if [ ! "$DATABASE_LOGIN_CHECK" = "0" ]; then
+				if [ "$DATABASE_LOGIN_CHECK" != "0" ]; then
 					mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "USE $DATABASE_NAME; $DATABASE_STRING"
 				else
 					echo; echo
