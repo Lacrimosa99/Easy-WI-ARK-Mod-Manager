@@ -11,7 +11,7 @@
 - wget<br>
 - sudo<br>
 - Easy-WI Database<br>
-- E-Mail Server (for Updater)<br>
+- E-Mail Server for AutoUpdater (Optional)<br>
 
 ---
 
@@ -33,6 +33,7 @@ Download the Ark Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
 Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.<br>
 Copy following Command in your Terminal (Putty or what ever):
 chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
+Later can you run the ARK Manager Script by: ./ark_mod_manager.sh
 
 ---
 
