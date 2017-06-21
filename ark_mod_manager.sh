@@ -992,6 +992,7 @@ ERROR() {
 	redMessage "It was not a valid input detected!"
 	redMessage "Please wait..."
 	sleep 3
+	continue
 }
 
 HEADER() {
