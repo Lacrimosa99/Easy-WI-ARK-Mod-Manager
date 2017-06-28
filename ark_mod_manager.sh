@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_MANAGER_VERSION="2.5.7"
+CURRENT_MANAGER_VERSION="2.5.8"
 ARK_APP_ID="346110"
 MASTER_PATH="/home/$MASTERSERVER_USER"
 STEAM_CMD_PATH="$MASTER_PATH/masterserver/steamCMD/steamcmd.sh"
@@ -37,15 +37,13 @@ MOD_NO_UPDATE_LOG="$LOG_PATH/ark_mod_id_no_update.log"
 MOD_LAST_VERSION="$MASTER_PATH/versions"
 TMP_PATH="$MASTER_PATH/temp"
 CURRENT_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
+CURRENT_UPDATER_USER="$(cat /root/ark_mod_updater.sh | grep MASTERSERVER_USER= | cut -c 20- | tr -d '"')"
 DEAD_MOD="deprec|outdated|brocken|not-supported|mod-is-dead|no-longer-|old|discontinued"
 
 PRE_CHECK() {
 	clear
 	HEADER
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
-		if [ ! -d "$MOD_LAST_VERSION" ]; then
-			su "$MASTERSERVER_USER" -c "mkdir -p "$MOD_LAST_VERSION""
-		fi
 		VERSION_CHECK
 		UPDATER_CHECK
 		USER_CHECK
@@ -78,29 +76,6 @@ VERSION_CHECK() {
 		fi
 	else
 		redMessage "Could not detect in Github the last Manager Script Version!"
-		FINISHED
-	fi
-}
-
-USER_CHECK() {
-	echo
-	if [ "$MASTERSERVER_USER" != "" ]; then
-		USER_CHECK=$(cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER" | head -n1)
-		if ([ "$USER_CHECK" != "/home/$MASTERSERVER_USER:/bin/bash" -a "$USER_CHECK" != "/home/$MASTERSERVER_USER/:/bin/bash" ]); then
-			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
-			redMessage "Please check the Masteruser inside this Script or the User Shell rights."
-			FINISHED
-		fi
-		if [ ! -d "$ARK_MOD_PATH" ]; then
-			redMessage "Masteraddons Directory not found!"
-			FINISHED
-		fi
-		if [ ! -f "$STEAM_CMD_PATH" ]; then
-			redMessage "Steam installation not found!"
-			FINISHED
-		fi
-	else
-		redMessage 'Variable "MASTERSERVER_USER" are empty!'
 		FINISHED
 	fi
 }
@@ -146,9 +121,42 @@ UPDATER_CHECK() {
 			sleep 5
 			echo
 		fi
+
+		if [ "$CURRENT_UPDATER_USER" == "" ]; then
+			sed -i "s/MASTERSERVER_USER=\"\"/MASTERSERVER_USER=\"$MASTERSERVER_USER\"/" /root/ark_mod_updater.sh
+		elif [ "$CURRENT_UPDATER_USER" != "$MASTERSERVER_USER" ]; then
+			sed -i "s/$CURRENT_UPDATER_USER/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+		fi
 	else
 		echo
 		redMessage "Could not detect last Updater Version!"
+		FINISHED
+	fi
+}
+
+USER_CHECK() {
+	echo
+	if [ "$MASTERSERVER_USER" != "" ]; then
+		USER_CHECK=`cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER" | head -n1`
+		if [ "$USER_CHECK" != "$MASTER_PATH:/bin/bash" -a "$USER_CHECK" != "$MASTER_PATH/:/bin/bash" ]; then
+			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
+			redMessage "Please check the Masteruser inside this Script or the User Shell rights."
+			FINISHED
+		fi
+		if [ ! -d "$ARK_MOD_PATH" ]; then
+			redMessage "Masteraddons Directory not found!"
+			FINISHED
+		fi
+		if [ ! -f "$STEAM_CMD_PATH" ]; then
+			redMessage "Steam installation not found!"
+			FINISHED
+		fi
+
+		if [ ! -d "$MOD_LAST_VERSION" ]; then
+			su "$MASTERSERVER_USER" -c "mkdir -p "$MOD_LAST_VERSION""
+		fi
+	else
+		redMessage 'Variable "MASTERSERVER_USER" are empty!'
 		FINISHED
 	fi
 }
@@ -169,9 +177,9 @@ MENU() {
 	whiteMessage "0  -  EXIT"
 	echo
 	echo
-	printf "Number:  "; read -n1 number
+	printf "Number:  "; read ANSWER
 
-	case $number in
+	case $ANSWER in
 		1)
 			tput civis; MODE=INSTALL; INSTALL;;
 
@@ -179,19 +187,19 @@ MENU() {
 			tput civis; MODE=INSTALLALL; INSTALL_ALL;;
 
 		3)
-			tput civis; UPDATER_INSTALL;;
+			tput civis; MODE=UPDATER_INSTALL; UPDATER_INSTALL;;
 
 		5)
 			tput civis; MODE=UPDATE; UPDATE;;
 
 		7)
-			tput civis; UNINSTALL;;
+			tput civis; MODE=UNINSTALL; UNINSTALL;;
 
 		8)
-			tput civis; UNINSTALL_ALL;;
+			tput civis; MODE=UNINSTALL_ALL; UNINSTALL_ALL;;
 
 		9)
-			tput civis; UPDATER_UNINSTALL;;
+			tput civis; MODE=UPDATER_UNINSTALL; UPDATER_UNINSTALL;;
 
 		0)
 			FINISHED;;
@@ -209,7 +217,7 @@ INSTALL() {
 	printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
 	tput civis
 
-	if [ "$ARK_MOD_ID" != "" ]; then
+	if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{9}$ ]]; then
 		QUESTION4
 		if [ ! -d "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" ]; then
 			INSTALL_CHECK
@@ -234,7 +242,7 @@ INSTALL() {
 
 INSTALL_ALL() {
 	echo; echo; tput cnorm
-	printf "Really install all ModIDs [Y/N]?: "; read -n1 ANSWER
+	printf "Really install all ModIDs [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -352,7 +360,7 @@ UPDATER_INSTALL() {
 
 UPDATER_UNINSTALL() {
 	echo; echo; tput cnorm
-	printf "Really uninstall Updater [Y/N]?: "; read -n1 ANSWER
+	printf "Really uninstall Updater [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -412,7 +420,7 @@ UNINSTALL() {
 		printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
 		tput civis
 
-		if [ "$ARK_MOD_ID" != "" ]; then
+		if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{9}$ ]]; then
 			local UNINSTALL_TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID")
 			local UNINSTALL_TMP_NAME2=$(if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID"; fi)
 			local UNINSTALL_TMP_PATH=$(ls "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID")
@@ -424,7 +432,7 @@ UNINSTALL() {
 				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG" >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_BACKUP_LOG" >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_NO_UPDATE_LOG" >/dev/null 2>&1
-				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_$ARK_MOD_ID'")
+				echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
 				DATABASE_CONNECTION
 				sleep 3
 				local UNINSTALL_TMP_NAME3=$(if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi)
@@ -461,7 +469,7 @@ UNINSTALL() {
 
 UNINSTALL_ALL() {
 	echo; echo; tput cnorm
-	printf "Really uninstall all Mod IDs [Y/N]?: "; read -n1 ANSWER
+	printf "Really uninstall all Mod IDs [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -478,11 +486,11 @@ UNINSTALL_ALL() {
 		if [ "$DELETE_MOD" != "" ]; then
 			for DELETE in ${DELETE_MOD[@]}; do
 				rm -rf "$ARK_MOD_PATH"/ark_"$DELETE" >/dev/null 2>&1
-				DATABASE_STRING=$(echo "DELETE FROM addons WHERE addons.addon = 'ark_"$DELETE"'")
+				echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
 				DATABASE_CONNECTION
+				rm -rf "$MOD_LAST_VERSION"/ark_mod_id_"$DELETE".txt >/dev/null 2>&1
 			done
 			rm -rf "$EASYWI_XML_FILES" >/dev/null 2>&1
-			rm -rf "$MOD_LAST_VERSION"/ark_mod_id_"$ARK_MOD_ID".txt >/dev/null 2>&1
 		fi
 
 		if [ -f "$MOD_LOG" ] || [ -f "$MOD_BACKUP_LOG" ]; then
@@ -529,8 +537,20 @@ INSTALL_CHECK() {
 						fi
 						if [ "$MOD_TMP_NAME" = "" ]; then
 							echo "$MODID" >> "$MOD_LOG"
-							if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ]; then
-								DATABASE_STRING=$(echo "INSERT INTO addons (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', '', '', '0', '0')")
+							if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+								echo "INSERT INTO \`addons\` (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', NULL, NULL, '0', '0');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+								DATABASE_CONNECTION
+
+								# Mod ID aus DB auslesen
+								DATABASE_MOD_ID=$($MYSQL_CONNECT -e "SELECT \`id\` FROM \`addons\` WHERE \`addon\` LIKE 'ark_$MODID' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+
+								# ARK und ARK-SoF ID aus DB auslesen
+								DATABASE_ARK_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arkse' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+								DATABASE_ARKSOF_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arksotf' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+
+								# Mod ID den Templates zuweisen
+								echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARK_ID', '');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+								echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARKSOF_ID', '');" >> $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
 								DATABASE_CONNECTION
 							elif [ "$MODE" = "UPDATE" ]; then
 								sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log
@@ -542,8 +562,21 @@ INSTALL_CHECK() {
 						fi
 						if [ "$MOD_TMP_NAME" = "" ]; then
 							echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
-							if [ "$MODE" = "INSTALL" ] || [ "$MODE" = "INSTALLALL" ]; then
-								DATABASE_STRING=$(echo "INSERT INTO addons (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', '', '', '0', '0')")
+							if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+								# Mod in DB eintragen
+								echo "INSERT INTO \`addons\` (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', NULL, NULL, '0', '0');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+								DATABASE_CONNECTION
+
+								# Mod ID aus DB auslesen
+								DATABASE_MOD_ID=$($MYSQL_CONNECT -e "SELECT \`id\` FROM \`addons\` WHERE \`addon\` LIKE 'ark_$MODID' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+
+								# ARK und ARK-SoF ID aus DB auslesen
+								DATABASE_ARK_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arkse' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+								DATABASE_ARKSOF_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arksotf' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+
+								# Mod ID den Templates zuweisen
+								echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARK_ID', '');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+								echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARKSOF_ID', '');" >> $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
 								DATABASE_CONNECTION
 							fi
 						fi
@@ -552,6 +585,7 @@ INSTALL_CHECK() {
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* >/dev/null 2>&1
 					echo "$ARK_LAST_CHANGES_DATE" > ""$MOD_LAST_VERSION"/ark_mod_id_"$MODID".txt"
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$MOD_LAST_VERSION" >/dev/null 2>&1
+					echo
 					greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
 					sleep 2
 				else
@@ -730,73 +764,96 @@ DECOMPRESS() {
 }
 
 DATABASE_CONNECTION() {
-	updatedb
-	if [ "`ps fax | grep 'mysqld' | grep -v 'grep'`" != "" ]; then
-		DATABASE_CONFIG_PATH=$(locate /stuff/config.php)
-		if [ $DATABASE_CONFIG_PATH != "" ]; then
-			DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
-			DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'host' | awk '{print $3}' | tr -d "\r';")
-			DATABASE_NAME=$(echo "$DATABASE_TMP" | grep 'db' | awk '{print $3}' | tr -d "\r';")
-			DATABASE_USER=$(echo "$DATABASE_TMP" | grep 'user' | awk '{print $3}' | tr -d "\r';")
-			DATABASE_PW=$(echo "$DATABASE_TMP" | grep 'pwd' | awk '{print $3}' | tr -d "\r';")
+	DATABASE_CONFIG_PATH=$(locate /stuff/config.php)
+	if [ $DATABASE_CONFIG_PATH != "" ]; then
+		DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
+		DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'host' | awk '{print $3}' | tr -d "\r';")
+		DATABASE_NAME=$(echo "$DATABASE_TMP" | grep 'db' | awk '{print $3}' | tr -d "\r';")
+		DATABASE_USER=$(echo "$DATABASE_TMP" | grep 'user' | awk '{print $3}' | tr -d "\r';")
+		DATABASE_PW=$(echo "$DATABASE_TMP" | grep 'pwd' | awk '{print $3}' | tr -d "\r';")
 
-			if [ "$DATABASE_HOST" = "localhost" ]; then
-				unset DATABASE_HOST
-				DATABASE_HOST="127.0.0.1"
-			fi
-
-			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
-				echo
-				cyanonelineMessage "Database Host: "; whiteMessage "$DATABASE_HOST"
-				cyanonelineMessage "Database Name: "; whiteMessage "$DATABASE_NAME"
-				cyanonelineMessage "Database User: "; whiteMessage "$DATABASE_USER"
-				echo; echo;	tput cnorm
-				printf "Database connection details correct [Y/N]?: "; read -n1 ANSWER
-				tput civis
-				case $ANSWER in
-					y|Y|j|J)
-						DATABASE_LOGIN_CHECK=$(mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "exit")
-						if [ "$DATABASE_LOGIN_CHECK" != "0" ]; then
-							mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "USE $DATABASE_NAME; $DATABASE_STRING"
-							echo
-							greenMessage "Database entry successfully entered"
-							echo; echo
-						else
-							echo; echo;	redMessage "Database Login failure!"
-							echo
-							yellowMessage "You must self Import the XML Files into your Webinterface"
-							CREATE_WI_IMPORT_FILE
-						fi;;
-					n|N)
-						echo; echo
-						yellowMessage "You must self Import the XML Files into your Webinterface"
-						CREATE_WI_IMPORT_FILE;;
-					*)
-						ERROR; DATABASE_CONNECTION;;
-				esac
+		if [ "$DATABASE_HOST" == "localhost" -o "$DATABASE_HOST" == "127.0.0.1" -o "$DATABASE_HOST" == "" ]; then
+			updatedb
+			if [ "`ps fax | grep 'mysqld' | grep -v 'grep'`" != "" ]; then
+				MYSQL_CONNECT="mysql -u $DATABASE_USER -p$DATABASE_PW -D $DATABASE_NAME"
 			else
-				DATABASE_LOGIN_CHECK=$(mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "exit")
-				if [ "$DATABASE_LOGIN_CHECK" != "0" ]; then
-					mysql -h "$DATABASE_HOST" -u "$DATABASE_USER" -p"$DATABASE_PW" -e "USE $DATABASE_NAME; $DATABASE_STRING"
-				else
-					echo; echo
-					redMessage "Database Login failure!"
-					FINISHED
+				echo; echo
+				redMessage "Database Server not Online!"
+				if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
+					echo
+					yellowMessage "You must self Import the XML Files into your Webinterface"
+					CREATE_WI_IMPORT_FILE
 				fi
 			fi
 		else
-			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
-				echo; echo
-				redMessage "Easy-WI Webinterface Database Config not Found!"
-				echo
-				yellowMessage "You must self Import the XML Files into your Webinterface"
-				CREATE_WI_IMPORT_FILE
-			fi
+			MYSQL_CONNECT="mysql -h $DATABASE_HOST -u $DATABASE_USER -p$DATABASE_PW -D $DATABASE_NAME"
 		fi
-	else
-		if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
+
+		if [ "$MODE" == "INSTALLALL" -o "$MODE" == "UNINSTALL_ALL" -o "$DATABASE_CONNECTED" == "Yes" ]; then
+			ANSWER="Y"
+		else
 			echo; echo
-			redMessage "Database Server not Online!"
+			cyanonelineMessage "Database Host: "; whiteMessage "$DATABASE_HOST"
+			cyanonelineMessage "Database Name: "; whiteMessage "$DATABASE_NAME"
+			cyanonelineMessage "Database User: "; whiteMessage "$DATABASE_USER"
+			echo;	tput cnorm
+			printf "Database connection details correct [Y/N]?: "; read ANSWER
+			tput civis
+		fi
+
+		case $ANSWER in
+			y|Y|j|J)
+				$MYSQL_CONNECT -e exit 2> /dev/null
+				ERROR_CODE=$?
+
+				if [ "$ERROR_CODE" == "0" ]; then
+					if [ "$DATABASE_STRING" == "" ]; then
+						$MYSQL_CONNECT < $TMP_PATH/ARK_MOD_MANAGER_SQL.sql 2> /dev/null
+					else
+						$MYSQL_CONNECT -e "$DATABASE_STRING"
+					fi
+					ERROR_CODE=$?
+
+					if [ "$ERROR_CODE" == "0" ]; then
+						DATABASE_CONNECTED="Yes"
+					else
+						echo
+						redMessage "Database entry for Mod $ARK_MOD_NAME_NORMAL failed!"
+						if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+							echo
+							yellowMessage "You must self Import the XML Files into your Webinterface"
+							CREATE_WI_IMPORT_FILE
+						fi
+						echo; echo
+					fi
+				else
+					echo
+					redMessage "Database Login failure!"
+					if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+						echo
+						yellowMessage "You must self Import the XML Files into your Webinterface"
+						CREATE_WI_IMPORT_FILE
+					elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALLALL" ]; then
+						echo
+						yellowMessage "Remove the Mod over the Webpanel \"Game Server->Addons\""
+					fi
+				fi;;
+			n|N)
+				if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+					echo; echo
+					yellowMessage "You must self Import the XML Files into your Webinterface"
+					CREATE_WI_IMPORT_FILE
+				elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
+					echo; echo
+					yellowMessage "Remove $ARK_MOD_NAME over your Webpanel \"Game Server->Addons\""
+				fi;;
+			*)
+				ERROR; DATABASE_CONNECTION;;
+		esac
+	else
+		echo; echo
+		redMessage "Easy-WI Webinterface Database Config not Found!"
+		if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
 			echo
 			yellowMessage "You must self Import the XML Files into your Webinterface"
 			CREATE_WI_IMPORT_FILE
@@ -830,7 +887,7 @@ CREATE_WI_IMPORT_FILE() {
 
 QUESTION1() {
 	echo; echo;	tput cnorm
-	printf "additional ModID installing [Y/N]?: "; read -n1 ANSWER
+	printf "additional ModID installing [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -844,7 +901,7 @@ QUESTION1() {
 
 QUESTION2() {
 	echo; echo; tput cnorm
-	printf "Want to install a ModID [Y/N]?: "; read -n1 ANSWER
+	printf "Want to install a ModID [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -858,7 +915,7 @@ QUESTION2() {
 
 QUESTION3() {
 	echo; echo;	tput cnorm
-	printf "additional ModID uninstalling [Y/N]?: "; read -n1 ANSWER
+	printf "additional ModID uninstalling [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -877,7 +934,7 @@ QUESTION4() {
 	cyanonelineMessage "ARK Mod ID:   "; whiteMessage "$ARK_MOD_ID"
 	cyanonelineMessage "ARK Mod Name: "; whiteMessage "$ARK_MOD_NAME_NORMAL"
 	echo; tput cnorm
-	printf "Are the details correct? [Y/N]?: "; read -n1 ANSWER
+	printf "Are the details correct? [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -891,7 +948,7 @@ QUESTION4() {
 
 QUESTION5() {
 	echo; echo;	tput cnorm
-	printf "Installing Mod Autoupdater [Y/N]?: "; read -n1 ANSWER
+	printf "Installing Mod Autoupdater [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -906,7 +963,7 @@ QUESTION5() {
 QUESTION6() {
 	echo; echo
 	tput cnorm
-	printf 'ModID in "not Update List" adding [Y/N]?: '; read -n1 ANSWER
+	printf 'ModID in "not Update List" adding [Y/N]?: '; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -933,7 +990,7 @@ QUESTION7() {
 		cyanonelineMessage "ARK Mod Name: "; whiteMessage "$ARK_MOD_NAME_NORMAL"
 	done
 	echo; echo; tput cnorm
-	printf "Want to install all Mod IDs [Y/N]?: "; read -n1 ANSWER
+	printf "Want to install all Mod IDs [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -969,6 +1026,9 @@ CLEANFILES() {
 	if [ -f "$TMP_PATH"/ark_update_failure.log ]; then
 		rm -rf "$TMP_PATH"/ark_update_failure.log
 	fi
+	if [ -f "$TMP_PATH"/ARK_MOD_MANAGER_SQL.sql ]; then
+		rm -rf "$TMP_PATH"/ARK_MOD_MANAGER_SQL.sql
+	fi
 }
 
 FINISHED() {
@@ -992,7 +1052,6 @@ ERROR() {
 	redMessage "It was not a valid input detected!"
 	redMessage "Please wait..."
 	sleep 3
-	continue
 }
 
 HEADER() {
