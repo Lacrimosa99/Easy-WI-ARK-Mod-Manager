@@ -243,7 +243,7 @@ INSTALL() {
 INSTALL_ALL() {
 	if [ ! -f "$MOD_LOG" ] && [ ! -f "$MOD_BACKUP_LOG" ]; then
 		echo
-		whiteMessage "List of Mods to install:"
+		whiteMessage "List of Mods to want install:"
 		for MODID in ${ARK_MOD_ID[@]}; do
 			MOD_NAME_CHECK
 			echo
