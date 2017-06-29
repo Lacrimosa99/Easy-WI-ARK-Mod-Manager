@@ -497,6 +497,7 @@ UNINSTALL_ALL() {
 			rm -rf "$LOG_PATH"/ark_mod_* >/dev/null 2>&1
 		fi
 
+		echo; echo
 		greenMessage "all Mods successfully uninstalled."
 		FINISHED
 	else
@@ -505,7 +506,6 @@ UNINSTALL_ALL() {
 		redMessage "Delete all exist ARK Mod Folder by Hand."
 		FINISHED
 	fi
-
 }
 
 MOD_NAME_CHECK() {
