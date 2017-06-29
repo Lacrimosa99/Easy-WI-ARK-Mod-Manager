@@ -52,6 +52,12 @@ No Private or another way are supported!
 
 ---
 
+<h4>You have found a Bug or a failure?</h4>
+Turn the Debug Mode to on (Debug="On") and copy the Console output into https://pastebin.com and create a new Issues Ticket with Name "Bug found".<br>
+Inside the "Issues", copy your pastebin Link... we will fix it in the Future.
+
+---
+
 <h4>You find my work well?</h4>
 
 Then support me with a donation.<br>
