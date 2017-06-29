@@ -765,7 +765,7 @@ DECOMPRESS() {
 
 DATABASE_CONNECTION() {
 	DATABASE_CONFIG_PATH=$(locate /stuff/config.php)
-	if [ $DATABASE_CONFIG_PATH != "" ]; then
+	if [ -f "$DATABASE_CONFIG_PATH" ]; then
 		DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
 		DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'host' | awk '{print $3}' | tr -d "\r';")
 		DATABASE_NAME=$(echo "$DATABASE_TMP" | grep 'db' | awk '{print $3}' | tr -d "\r';")
@@ -807,6 +807,7 @@ DATABASE_CONNECTION() {
 				ERROR_CODE=$?
 
 				if [ "$ERROR_CODE" == "0" ]; then
+					DATABASE_CONNECTED="Yes"
 					if [ "$DATABASE_STRING" == "" ]; then
 						$MYSQL_CONNECT < $TMP_PATH/ARK_MOD_MANAGER_SQL.sql 2> /dev/null
 					else
@@ -814,9 +815,7 @@ DATABASE_CONNECTION() {
 					fi
 					ERROR_CODE=$?
 
-					if [ "$ERROR_CODE" == "0" ]; then
-						DATABASE_CONNECTED="Yes"
-					else
+					if [ "$ERROR_CODE" != "0" ]; then
 						echo
 						redMessage "Database entry for Mod $ARK_MOD_NAME_NORMAL failed!"
 						if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
@@ -851,14 +850,84 @@ DATABASE_CONNECTION() {
 				ERROR; DATABASE_CONNECTION;;
 		esac
 	else
-		echo; echo
-		redMessage "Easy-WI Webinterface Database Config not Found!"
-		if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
-			echo
-			yellowMessage "You must self Import the XML Files into your Webinterface"
-			CREATE_WI_IMPORT_FILE
-		fi
+		EXT_DATABASE_CONNECTION
 	fi
+}
+
+EXT_DATABASE_CONNECTION() {
+	if [ "$DATABASE_CONNECTED" == "Yes" ]; then
+		ANSWER="Y"
+	else
+		echo; echo; tput cnorm
+		printf "Is the easy-wi Database on an external System [Y/N]? "; read ANSWER
+		tput civis
+	fi
+
+	case $ANSWER in
+		j|J|y|Y)
+			if [ "$DATABASE_CONNECTED" != "Yes" ]; then
+				echo
+				cyanMessage "Please enter the following Data"
+				echo; tput cnorm
+				printf "ext. Database IP: "; read DATABASE_HOST
+				printf "ext. Database DB Name: "; read DATABASE_NAME
+				printf "ext. Database User Name: "; read DATABASE_USER
+				printf "ext. Database Password: "; read DATABASE_PW
+				tput civis
+			fi
+
+			MYSQL_CONNECT="mysql -h $DATABASE_HOST -u $DATABASE_USER -p$DATABASE_PW -D $DATABASE_NAME"
+
+			$MYSQL_CONNECT -e exit 2> /dev/null
+			ERROR_CODE=$?
+
+			if [ "$ERROR_CODE" == "0" ]; then
+				DATABASE_CONNECTED="Yes"
+				if [ "$DATABASE_STRING" == "" ]; then
+					$MYSQL_CONNECT < $TMP_PATH/ARK_MOD_MANAGER_SQL.sql 2> /dev/null
+				else
+					$MYSQL_CONNECT -e "$DATABASE_STRING"
+				fi
+				ERROR_CODE=$?
+
+				if [ "$ERROR_CODE" == "0" ]; then
+					DATABASE_CONNECTED="Yes"
+				else
+					echo
+					redMessage "Database entry for Mod $ARK_MOD_NAME_NORMAL failed!"
+					if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+						echo
+						yellowMessage "You must self Import the XML Files into your Webinterface"
+						CREATE_WI_IMPORT_FILE
+					elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALLALL" ]; then
+						echo
+						yellowMessage "Remove the Mod over the Webpanel \"Game Server->Addons\""
+					fi
+					echo; echo
+				fi
+			else
+				echo
+				redMessage "Database Login failure!"
+				if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+					echo
+					yellowMessage "You must self Import the XML Files into your Webinterface"
+					CREATE_WI_IMPORT_FILE
+				elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALLALL" ]; then
+					echo
+					yellowMessage "Remove the Mod over the Webpanel \"Game Server->Addons\""
+				fi
+			fi;;
+		n|N)
+			echo; echo
+			redMessage "Easy-WI Webinterface Database Config not Found!"
+			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
+				echo
+				yellowMessage "You must self Import the XML Files into your Webinterface"
+				CREATE_WI_IMPORT_FILE
+			fi;;
+		*)
+			ERROR; EXT_DATABASE_CONNECTION;;
+	esac
 }
 
 CREATE_WI_IMPORT_FILE() {
