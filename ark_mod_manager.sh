@@ -257,6 +257,7 @@ INSTALL_ALL() {
 
 		case $ANSWER in
 			y|Y|j|J)
+				echo
 				yellowMessage "Please wait..."
 				INSTALL_CHECK
 				echo; echo
@@ -771,6 +772,7 @@ DECOMPRESS() {
 }
 
 DATABASE_CONNECTION() {
+	updatedb
 	DATABASE_CONFIG_PATH=$(locate /stuff/config.php)
 	if [ -f "$DATABASE_CONFIG_PATH" ]; then
 		DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
@@ -780,7 +782,6 @@ DATABASE_CONNECTION() {
 		DATABASE_PW=$(echo "$DATABASE_TMP" | grep 'pwd' | awk '{print $3}' | tr -d "\r';")
 
 		if [ "$DATABASE_HOST" == "localhost" -o "$DATABASE_HOST" == "127.0.0.1" -o "$DATABASE_HOST" == "" ]; then
-			updatedb
 			if [ "`ps fax | grep 'mysqld' | grep -v 'grep'`" != "" ]; then
 				MYSQL_CONNECT="mysql -u $DATABASE_USER -p$DATABASE_PW -D $DATABASE_NAME"
 			else
@@ -925,13 +926,16 @@ EXT_DATABASE_CONNECTION() {
 				fi
 			fi;;
 		n|N)
-			echo; echo
-			redMessage "Easy-WI Webinterface Database Config not Found!"
-			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
+			if [ "$DATABASE_CONNECTED" != "No" ]; then
+				echo; echo
+				redMessage "Easy-WI Webinterface Database Config not Found!"
+				DATABASE_CONNECTED="No"
+			fi
+			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ] && [ "$DATABASE_CONNECTED" != "No" ]; then
 				echo
 				yellowMessage "You must self Import the XML Files into your Webinterface"
-				CREATE_WI_IMPORT_FILE
-			fi;;
+			fi
+			CREATE_WI_IMPORT_FILE;;
 		*)
 			ERROR; EXT_DATABASE_CONNECTION;;
 	esac
