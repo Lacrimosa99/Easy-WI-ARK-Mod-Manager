@@ -241,27 +241,34 @@ INSTALL() {
 }
 
 INSTALL_ALL() {
-	echo; echo; tput cnorm
-	printf "Really install all ModIDs [Y/N]?: "; read ANSWER
-	tput civis
-	case $ANSWER in
-		y|Y|j|J)
-			echo;;
-		n|N)
-			FINISHED;;
-		*)
-			ERROR; INSTALL_ALL;;
-	esac
-
 	if [ ! -f "$MOD_LOG" ] && [ ! -f "$MOD_BACKUP_LOG" ]; then
-		QUESTION7
-		yellowMessage "Please wait..."
-		INSTALL_CHECK
-		echo; echo
-		cyanMessage "List of installed Mods:"
 		echo
-		cat "$MOD_LOG" | sort
-		FINISHED
+		whiteMessage "List of Mods to install:"
+		for MODID in ${ARK_MOD_ID[@]}; do
+			MOD_NAME_CHECK
+			echo
+			cyanonelineMessage "ARK Mod ID:   "; whiteMessage "$ARK_MOD_ID"
+			cyanonelineMessage "ARK Mod Name: "; whiteMessage "$ARK_MOD_NAME_NORMAL"
+		done
+
+		echo; echo; tput cnorm
+		printf "Want to install all Mod IDs [Y/N]?: "; read ANSWER
+		tput civis
+
+		case $ANSWER in
+			y|Y|j|J)
+				yellowMessage "Please wait..."
+				INSTALL_CHECK
+				echo; echo
+				cyanMessage "List of installed Mods:"
+				echo
+				cat "$MOD_LOG" | sort
+				FINISHED;;
+			n|N)
+				FINISHED;;
+			*)
+				ERROR; echo; INSTALL_ALL;;
+		esac
 	else
 		redMessage "This Option is for first Mod installation only."
 		redMessage "Installation canceled!"
@@ -1045,29 +1052,6 @@ QUESTION6() {
 			continue;;
 		*)
 			ERROR; QUESTION6;;
-	esac
-}
-
-QUESTION7() {
-	echo
-	echo "Install all Mode - ModID List:"
-	echo
-	for MODID in ${ARK_MOD_ID[@]}; do
-		MOD_NAME_CHECK
-		echo
-		cyanonelineMessage "ARK Mod ID:   "; whiteMessage "$ARK_MOD_ID"
-		cyanonelineMessage "ARK Mod Name: "; whiteMessage "$ARK_MOD_NAME_NORMAL"
-	done
-	echo; echo; tput cnorm
-	printf "Want to install all Mod IDs [Y/N]?: "; read ANSWER
-	tput civis
-	case $ANSWER in
-		y|Y|j|J)
-			echo;;
-		n|N)
-			FINISHED;;
-		*)
-			ERROR; QUESTION7;;
 	esac
 }
 
