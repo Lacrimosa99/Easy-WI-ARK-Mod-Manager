@@ -247,7 +247,7 @@ INSTALL_ALL() {
 		for MODID in ${ARK_MOD_ID[@]}; do
 			MOD_NAME_CHECK
 			echo
-			cyanonelineMessage "ARK Mod ID:   "; whiteMessage "$ARK_MOD_ID"
+			cyanonelineMessage "ARK Mod ID:   "; whiteMessage "$MODID"
 			cyanonelineMessage "ARK Mod Name: "; whiteMessage "$ARK_MOD_NAME_NORMAL"
 		done
 
