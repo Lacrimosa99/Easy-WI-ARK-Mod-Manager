@@ -134,7 +134,7 @@ UPDATER_CHECK() {
 		if [ "$CURRENT_UPDATER_EMAIL" == "" ]; then
 			sed -i "s/EMAIL_TO=\"\"/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
 		elif [ "$CURRENT_UPDATER_EMAIL" != "$EMAIL_TO" ]; then
-			sed -i "s/$CURRENT_UPDATER_USER/$EMAIL_TO/" /root/ark_mod_updater.sh
+			sed -i "s/$CURRENT_UPDATER_EMAIL/$EMAIL_TO/" /root/ark_mod_updater.sh
 		fi
 	else
 		echo
