@@ -4,7 +4,8 @@
 
 ---
 
-ChatRoom: [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/Easy-WI-ARK-Mod-Manager/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+- ChatRoom: [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/Easy-WI-ARK-Mod-Manager/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)<br>
+- Issue Tracking at [GitHub](https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Manager/issues)
 
 ---
 
