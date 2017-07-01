@@ -38,6 +38,7 @@ MOD_LAST_VERSION="$MASTER_PATH/versions"
 TMP_PATH="$MASTER_PATH/temp"
 CURRENT_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
 CURRENT_UPDATER_USER="$(cat /root/ark_mod_updater.sh | grep MASTERSERVER_USER= | cut -c 20- | tr -d '"')"
+CURRENT_UPDATER_EMAIL="$(cat /root/ark_mod_updater.sh | grep EMAIL_TO= | cut -c 10- | tr -d '"')"
 DEAD_MOD="deprec|outdated|brocken|not-supported|mod-is-dead|no-longer-|old|discontinued"
 
 PRE_CHECK() {
@@ -122,10 +123,18 @@ UPDATER_CHECK() {
 			echo
 		fi
 
+		# User
 		if [ "$CURRENT_UPDATER_USER" == "" ]; then
 			sed -i "s/MASTERSERVER_USER=\"\"/MASTERSERVER_USER=\"$MASTERSERVER_USER\"/" /root/ark_mod_updater.sh
 		elif [ "$CURRENT_UPDATER_USER" != "$MASTERSERVER_USER" ]; then
 			sed -i "s/$CURRENT_UPDATER_USER/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
+		fi
+
+		#E-Mail
+		if [ "$CURRENT_UPDATER_EMAIL" == "" ]; then
+			sed -i "s/EMAIL_TO=\"\"/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
+		elif [ "$CURRENT_UPDATER_EMAIL" != "$EMAIL_TO" ]; then
+			sed -i "s/$CURRENT_UPDATER_USER/$EMAIL_TO/" /root/ark_mod_updater.sh
 		fi
 	else
 		echo
