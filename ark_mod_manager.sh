@@ -184,7 +184,7 @@ MENU() {
 			tput civis; MODE=INSTALL; INSTALL;;
 
 		2)
-			tput civis; MODE=INSTALLALL; INSTALL_ALL;;
+			tput civis; MODE=INSTALL_ALL; INSTALL_ALL;;
 
 		3)
 			tput civis; MODE=UPDATER_INSTALL; UPDATER_INSTALL;;
@@ -288,7 +288,6 @@ UPDATE() {
 		echo
 		FINISHED
 	fi
-
 	CLEANFILES
 	if [ -f "$MOD_LOG" ]; then
 		if [ -f "$MOD_BACKUP_LOG" ]; then
@@ -305,7 +304,6 @@ UPDATE() {
 		rm -rf "$TMP_PATH"/ark_mod_updater_status
 		FINISHED
 	fi
-
 	if [ -f "$TMP_PATH"/ark_custom_appid_tmp.log ]; then
 		ARK_MOD_ID=$(cat "$TMP_PATH"/ark_custom_appid_tmp.log)
 		INSTALL_CHECK
@@ -440,8 +438,7 @@ UNINSTALL() {
 				sed -i "/$ARK_MOD_ID/d" "$MOD_LOG" >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_BACKUP_LOG" >/dev/null 2>&1
 				sed -i "/$ARK_MOD_ID/d" "$MOD_NO_UPDATE_LOG" >/dev/null 2>&1
-				echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-				DATABASE_CONNECTION
+				MOD_DATABASE_STRING
 				sleep 3
 				local UNINSTALL_TMP_NAME3=$(if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG"; fi)
 				if [ "$UNINSTALL_TMP_NAME3" = "" ]; then
@@ -494,8 +491,7 @@ UNINSTALL_ALL() {
 		if [ "$DELETE_MOD" != "" ]; then
 			for DELETE in ${DELETE_MOD[@]}; do
 				rm -rf "$ARK_MOD_PATH"/ark_"$DELETE" >/dev/null 2>&1
-				echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-				DATABASE_CONNECTION
+				MOD_DATABASE_STRING
 				rm -rf "$MOD_LAST_VERSION"/ark_mod_id_"$DELETE".txt >/dev/null 2>&1
 			done
 			rm -rf "$EASYWI_XML_FILES" >/dev/null 2>&1
@@ -545,22 +541,7 @@ INSTALL_CHECK() {
 						fi
 						if [ "$MOD_TMP_NAME" = "" ]; then
 							echo "$MODID" >> "$MOD_LOG"
-							if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
-								echo "INSERT INTO \`addons\` (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', NULL, NULL, '0', '0');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-								DATABASE_CONNECTION
-
-								# Mod ID aus DB auslesen
-								DATABASE_MOD_ID=$($MYSQL_CONNECT -e "SELECT \`id\` FROM \`addons\` WHERE \`addon\` LIKE 'ark_$MODID' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
-
-								# ARK und ARK-SoF ID aus DB auslesen
-								DATABASE_ARK_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arkse' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
-								DATABASE_ARKSOF_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arksotf' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
-
-								# Mod ID den Templates zuweisen
-								echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARK_ID', '');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-								echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARKSOF_ID', '');" >> $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-								DATABASE_CONNECTION
-							elif [ "$MODE" = "UPDATE" ]; then
+							if [ "$MODE" = "UPDATE" ]; then
 								sed -i "/$MODID/d" "$TMP_PATH"/ark_custom_appid_tmp.log
 							fi
 						fi
@@ -570,29 +551,13 @@ INSTALL_CHECK() {
 						fi
 						if [ "$MOD_TMP_NAME" = "" ]; then
 							echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
-							if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
-								# Mod in DB eintragen
-								echo "INSERT INTO \`addons\` (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', NULL, NULL, '0', '0');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-								DATABASE_CONNECTION
-
-								# Mod ID aus DB auslesen
-								DATABASE_MOD_ID=$($MYSQL_CONNECT -e "SELECT \`id\` FROM \`addons\` WHERE \`addon\` LIKE 'ark_$MODID' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
-
-								# ARK und ARK-SoF ID aus DB auslesen
-								DATABASE_ARK_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arkse' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
-								DATABASE_ARKSOF_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arksotf' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
-
-								# Mod ID den Templates zuweisen
-								echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARK_ID', '');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-								echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARKSOF_ID', '');" >> $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-								DATABASE_CONNECTION
-							fi
 						fi
 					fi
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" >/dev/null 2>&1
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* >/dev/null 2>&1
 					echo "$ARK_LAST_CHANGES_DATE" > ""$MOD_LAST_VERSION"/ark_mod_id_"$MODID".txt"
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$MOD_LAST_VERSION" >/dev/null 2>&1
+					MOD_DATABASE_STRING
 					echo
 					greenMessage "Mod $ARK_MOD_NAME_NORMAL was successfully installed."
 					sleep 2
@@ -771,9 +736,40 @@ DECOMPRESS() {
 	fi
 }
 
+MOD_DATABASE_STRING() {
+	if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
+		# Mod in DB eintragen
+		echo "INSERT INTO \`addons\` (id, active, paddon, addon, type, folder, menudescription, configs, cmd, rmcmd, depending, resellerid) VALUES (NULL, 'Y', 'N', 'ark_$MODID', 'tool', '', 'AppID: $MODID - $ARK_MOD_NAME_NORMAL', '', NULL, NULL, '0', '0');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+		DATABASE_CONNECTION
+
+		# Mod ID aus DB auslesen
+		DATABASE_MOD_ID=$($MYSQL_CONNECT -e "SELECT \`id\` FROM \`addons\` WHERE \`addon\` LIKE 'ark_$MODID' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+
+		# ARK und ARK-SoF ID aus DB auslesen
+		DATABASE_ARK_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arkse' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+		DATABASE_ARKSOF_ID=$($MYSQL_CONNECT -e "SELECT id FROM \`servertypes\` WHERE \`shorten\` LIKE 'arksotf' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+
+		# Mod ID den Templates zuweisen
+		echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARK_ID', '');" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+		echo "INSERT INTO \`addons_allowed\` (addon_id, servertype_id, reseller_id) VALUES ('$DATABASE_MOD_ID', '$DATABASE_ARKSOF_ID', '');" >> $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+		DATABASE_CONNECTION
+	elif [ "$MODE" == "UPDATE" ]; then
+		# Mod ID aus DB auslesen
+		DATABASE_MOD_ID=$($MYSQL_CONNECT -e "SELECT \`id\` FROM \`addons\` WHERE \`addon\` LIKE 'ark_$MODID' ORDER BY \`id\` ASC;" 2> /dev/null | tr -d "id\n")
+
+		echo "UPDATE \`addons\` SET \`menudescription\` = 'AppID: $MODID - $ARK_MOD_NAME_NORMAL' WHERE \`addons\`.\`id\` = '$DATABASE_MOD_ID';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+		DATABASE_CONNECTION
+	elif [ "$MODE" == "UNINSTALL" ]; then
+		echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+		DATABASE_CONNECTION
+	elif [ "$MODE" == "UNINSTALL_ALL" ]; then
+		echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+		DATABASE_CONNECTION
+	fi
+}
+
 DATABASE_CONNECTION() {
-	updatedb
-	DATABASE_CONFIG_PATH=$(locate /stuff/config.php)
+	DATABASE_CONFIG_PATH=$(updatedb; locate /stuff/config.php)
 	if [ -f "$DATABASE_CONFIG_PATH" ]; then
 		DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
 		DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'host' | awk '{print $3}' | tr -d "\r';")
@@ -781,13 +777,21 @@ DATABASE_CONNECTION() {
 		DATABASE_USER=$(echo "$DATABASE_TMP" | grep 'user' | awk '{print $3}' | tr -d "\r';")
 		DATABASE_PW=$(echo "$DATABASE_TMP" | grep 'pwd' | awk '{print $3}' | tr -d "\r';")
 
+		if [ ! -f /root/ark_mod_updater_db.conf ]; then
+			echo "Host: $DATABASE_HOST" > /root/ark_mod_updater_db.conf
+			echo "Name: $DATABASE_NAME" >> /root/ark_mod_updater_db.conf
+			echo "User: $DATABASE_USER" >> /root/ark_mod_updater_db.conf
+			echo "PW: $DATABASE_PW" >> /root/ark_mod_updater_db.conf
+			chmod 600 /root/ark_mod_updater_db.conf
+		fi
+
 		if [ "$DATABASE_HOST" == "localhost" -o "$DATABASE_HOST" == "127.0.0.1" -o "$DATABASE_HOST" == "" ]; then
 			if [ "`ps fax | grep 'mysqld' | grep -v 'grep'`" != "" ]; then
 				MYSQL_CONNECT="mysql -u $DATABASE_USER -p$DATABASE_PW -D $DATABASE_NAME"
 			else
 				echo; echo
 				redMessage "Database Server not Online!"
-				if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ]; then
+				if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALL_ALL" ]; then
 					echo
 					yellowMessage "You must self Import the XML Files into your Webinterface"
 					CREATE_WI_IMPORT_FILE
@@ -797,7 +801,7 @@ DATABASE_CONNECTION() {
 			MYSQL_CONNECT="mysql -h $DATABASE_HOST -u $DATABASE_USER -p$DATABASE_PW -D $DATABASE_NAME"
 		fi
 
-		if [ "$MODE" == "INSTALLALL" -o "$MODE" == "UNINSTALL_ALL" -o "$DATABASE_CONNECTED" == "Yes" ]; then
+		if [ "$MODE" == "INSTALL_ALL" -o "$MODE" == "UNINSTALL_ALL" -o "$DATABASE_CONNECTED" == "Yes" ]; then
 			ANSWER="Y"
 		else
 			echo; echo
@@ -826,7 +830,7 @@ DATABASE_CONNECTION() {
 					if [ "$ERROR_CODE" != "0" ]; then
 						echo
 						redMessage "Database entry for Mod $ARK_MOD_NAME_NORMAL failed!"
-						if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+						if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 							echo
 							yellowMessage "You must self Import the XML Files into your Webinterface"
 							CREATE_WI_IMPORT_FILE
@@ -836,17 +840,17 @@ DATABASE_CONNECTION() {
 				else
 					echo
 					redMessage "Database Login failure!"
-					if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+					if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 						echo
 						yellowMessage "You must self Import the XML Files into your Webinterface"
 						CREATE_WI_IMPORT_FILE
-					elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALLALL" ]; then
+					elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
 						echo
 						yellowMessage "Remove the Mod over the Webpanel \"Game Server->Addons\""
 					fi
 				fi;;
 			n|N)
-				if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+				if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 					echo; echo
 					yellowMessage "You must self Import the XML Files into your Webinterface"
 					CREATE_WI_IMPORT_FILE
@@ -891,6 +895,14 @@ EXT_DATABASE_CONNECTION() {
 
 			if [ "$ERROR_CODE" == "0" ]; then
 				DATABASE_CONNECTED="Yes"
+				if [ ! -f /root/ark_mod_updater_db.conf ]; then
+					echo "Host: $DATABASE_HOST" > /root/ark_mod_updater_db.conf
+					echo "Name: $DATABASE_NAME" >> /root/ark_mod_updater_db.conf
+					echo "User: $DATABASE_USER" >> /root/ark_mod_updater_db.conf
+					echo "PW: $DATABASE_PW" >> /root/ark_mod_updater_db.conf
+					chmod 600 /root/ark_mod_updater_db.conf
+				fi
+
 				if [ "$DATABASE_STRING" == "" ]; then
 					$MYSQL_CONNECT < $TMP_PATH/ARK_MOD_MANAGER_SQL.sql 2> /dev/null
 				else
@@ -898,16 +910,14 @@ EXT_DATABASE_CONNECTION() {
 				fi
 				ERROR_CODE=$?
 
-				if [ "$ERROR_CODE" == "0" ]; then
-					DATABASE_CONNECTED="Yes"
-				else
+				if [ "$ERROR_CODE" != "0" ]; then
 					echo
 					redMessage "Database entry for Mod $ARK_MOD_NAME_NORMAL failed!"
-					if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+					if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 						echo
 						yellowMessage "You must self Import the XML Files into your Webinterface"
 						CREATE_WI_IMPORT_FILE
-					elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALLALL" ]; then
+					elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
 						echo
 						yellowMessage "Remove the Mod over the Webpanel \"Game Server->Addons\""
 					fi
@@ -916,11 +926,11 @@ EXT_DATABASE_CONNECTION() {
 			else
 				echo
 				redMessage "Database Login failure!"
-				if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALLALL" ]; then
+				if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 					echo
 					yellowMessage "You must self Import the XML Files into your Webinterface"
 					CREATE_WI_IMPORT_FILE
-				elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALLALL" ]; then
+				elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
 					echo
 					yellowMessage "Remove the Mod over the Webpanel \"Game Server->Addons\""
 				fi
@@ -931,11 +941,11 @@ EXT_DATABASE_CONNECTION() {
 				redMessage "Easy-WI Webinterface Database Config not Found!"
 				DATABASE_CONNECTED="No"
 			fi
-			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALLALL" ] && [ "$DATABASE_CONNECTED" != "No" ]; then
+			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALL_ALL" ] && [ "$DATABASE_CONNECTED" != "No" ]; then
 				echo
 				yellowMessage "You must self Import the XML Files into your Webinterface"
-			fi
-			CREATE_WI_IMPORT_FILE;;
+				CREATE_WI_IMPORT_FILE
+			fi;;
 		*)
 			ERROR; EXT_DATABASE_CONNECTION;;
 	esac
