@@ -4,6 +4,10 @@
 
 ---
 
+ARK Mod/Content Manager ChatRoom: https://gitter.im/Easy-WI-ARK-Mod-Manager/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link
+
+---
+
 <h4>Requirements:</h4>
 - Debian or Ubuntu (tested)<br>
 - Root User<br>
