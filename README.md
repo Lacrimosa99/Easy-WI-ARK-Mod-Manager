@@ -10,7 +10,7 @@
 ---
 
 <h4>Requirements:</h4>
-- Debian or Ubuntu (tested)<br>
+- Debian >8 or Ubuntu >15.10 (tested)<br>
 - Root User<br>
 - curl<br>
 - wget<br>
