@@ -15,6 +15,7 @@
 - curl<br>
 - wget<br>
 - sudo<br>
+- locate<br>
 - Easy-WI Database<br>
 - E-Mail Server for AutoUpdater (Optional)<br>
 
