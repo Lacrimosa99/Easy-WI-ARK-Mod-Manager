@@ -45,6 +45,17 @@ PRE_CHECK() {
 	clear
 	HEADER
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
+		if [ -f /etc/debian_version ]; then
+			if [ "`dpkg-query -s locate 2>/dev/null`" == "" ]; then
+				okAndSleep "Installing package locate"
+				apt-get -y install locate  >/dev/null 2>&1
+			fi
+		elif [ -f /etc/centos-release ]; then
+			if [ "`rpm -qa locate 2>/dev/null`" == "" ]; then
+				okAndSleep "Installing package locate"
+				yum -y -q install locate
+			fi
+		fi
 		VERSION_CHECK
 		UPDATER_CHECK
 		USER_CHECK
