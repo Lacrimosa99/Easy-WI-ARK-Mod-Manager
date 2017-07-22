@@ -24,7 +24,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ######## from here nothing change ########
 ##########################################
 
-CURRENT_MANAGER_VERSION="2.5.8"
+CURRENT_MANAGER_VERSION="2.5.9"
 ARK_APP_ID="346110"
 MASTER_PATH="/home/$MASTERSERVER_USER"
 STEAM_CMD_PATH="$MASTER_PATH/masterserver/steamCMD/steamcmd.sh"
@@ -49,11 +49,13 @@ PRE_CHECK() {
 			if [ "`dpkg-query -s locate 2>/dev/null`" == "" ]; then
 				greenMessage "Installing package locate"
 				apt-get -y install locate  >/dev/null 2>&1
+				echo
 			fi
 		elif [ -f /etc/centos-release ]; then
 			if [ "`rpm -qa locate 2>/dev/null`" == "" ]; then
 				greenMessage "Installing package locate"
 				yum -y -q install locate
+				echo
 			fi
 		fi
 		VERSION_CHECK
@@ -291,8 +293,27 @@ INSTALL_ALL() {
 				ERROR; echo; INSTALL_ALL;;
 		esac
 	else
-		redMessage "This Option is for first Mod installation only."
-		redMessage "Installation canceled!"
+		unset ARK_MOD_ID
+		echo; echo
+		touch "$TMP_PATH"/ark_mod_updater_status
+		tput cnorm
+		whiteMessage "Example: 525507438 479295136 632091170"
+		printf "Please enter your ModIDs with blank sign and press Enter: "; read ARK_MOD_ID
+		tput civis
+		echo
+		yellowMessage "Please wait..."
+		echo
+		for MODID in ${ARK_MOD_ID[@]}; do
+			if [ ! -d "$ARK_MOD_PATH"/ark_"$MODID" ]; then
+				echo "$MODID" >> "$TMP_PATH"/ark_mod_appid_check.log
+			fi
+		done
+		if [ -f "$TMP_PATH"/ark_mod_appid_check.log ]; then
+			ARK_MOD_ID=`cat "$TMP_PATH"/ark_mod_appid_check.log`
+			INSTALL_CHECK
+		else
+			redMessage "All Mod IDs are already installed!"
+		fi
 		FINISHED
 	fi
 }
@@ -1115,6 +1136,9 @@ CLEANFILES() {
 	fi
 	if [ -f "$TMP_PATH"/ARK_MOD_MANAGER_SQL.sql ]; then
 		rm -rf "$TMP_PATH"/ARK_MOD_MANAGER_SQL.sql
+	fi
+	if [ -f "$TMP_PATH"/ark_mod_appid_check.log ]; then
+		rm -rf "$TMP_PATH"/ark_mod_appid_check.log
 	fi
 }
 
