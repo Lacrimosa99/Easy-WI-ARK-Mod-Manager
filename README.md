@@ -9,6 +9,8 @@
 
 ---
 
+Maps are currently not supported!<br>
+
 <h4>Requirements:</h4>
 - Debian >8 or Ubuntu >15.10 (tested)<br>
 - Root User<br>
