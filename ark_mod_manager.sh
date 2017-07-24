@@ -20,13 +20,30 @@ EMAIL_TO=""
 ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 
 
+
+##############################################
+####### This is for experienced users! #######
+##############################################
+
+#If you relocated your game folders you can change the base location here
+EWI_BASE_PATH="/home"
+
+
+
+
+
+
+
+
+
+
 ##############################################
 ######## do not change anything below ########
 ##############################################
 
 CURRENT_MANAGER_VERSION="2.5.9"
 ARK_APP_ID="346110"
-MASTER_PATH="/home/$MASTERSERVER_USER"
+MASTER_PATH="$EWI_BASE_PATH/$MASTERSERVER_USER"
 STEAM_CMD_PATH="$MASTER_PATH/masterserver/steamCMD/steamcmd.sh"
 ARK_MOD_PATH="$MASTER_PATH/masteraddons"
 EASYWI_XML_FILES="$MASTER_PATH/easywi-xml-files"
