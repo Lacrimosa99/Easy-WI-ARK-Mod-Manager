@@ -20,21 +20,12 @@ EMAIL_TO=""
 ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 
 
-
 ##############################################
 ####### This is for experienced users! #######
 ##############################################
 
 #If you relocated your game folders you can change the base location here
 EWI_BASE_PATH="/home"
-
-
-
-
-
-
-
-
 
 
 ##############################################
