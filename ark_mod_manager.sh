@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Debug Modus
+# Debug Mode
 DEBUG="OFF"
 
 # Easy-WI Masterserver User
 MASTERSERVER_USER="easy-wi"
 
-# E-Mail Modul for Autoupdater
-# deactivate E-Mail Support with empty EMAIL_TO Field
+# E-Mail Module for Autoupdater
+# disable E-Mail Support by specifying an empty string in EMAIL_TO
 EMAIL_TO=""
 
-# Mod ID´s for Modus "Install all ModIDs"
+# Mod IDs for Mode "Install all ModIDs"
 # Following Mods will be install:
 # 525507438 - K9 Custom Stacks Size
 # 479295136 - Aku Shima
@@ -20,9 +20,9 @@ EMAIL_TO=""
 ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 
 
-##########################################
-######## from here nothing change ########
-##########################################
+##############################################
+######## do not change anything below ########
+##############################################
 
 CURRENT_MANAGER_VERSION="2.5.9"
 ARK_APP_ID="346110"
@@ -73,39 +73,39 @@ PRE_CHECK() {
 }
 
 VERSION_CHECK() {
-	yellowMessage "Checking for the latest Manager Script"
+	yellowMessage "Checking for manager script updates"
 	LATEST_MANAGER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9]\.[0-9])'`
 	sleep 3
 
 	if [ "$LATEST_MANAGER_VERSION" != "" ]; then
 		if [ "`printf "${LATEST_MANAGER_VERSION}\n${CURRENT_MANAGER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_MANAGER_VERSION" ]; then
-			redMessage "You are using a old Manager Script Version ${CURRENT_MANAGER_VERSION}."
-			redMessage "Please upgrade to Version ${LATEST_MANAGER_VERSION} and retry."
+			redMessage "You are using an old Manager Script Version ${CURRENT_MANAGER_VERSION}."
+			redMessage "Please upgrade to current version ${LATEST_MANAGER_VERSION} and try again."
 			redMessage "Download Link: https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases"
 			FINISHED
 		else
-			greenMessage "You are using the Up-to-Date Manager Version ${CURRENT_MANAGER_VERSION}"
+			greenMessage "You are running the latetst manager script version ${CURRENT_MANAGER_VERSION}"
 			sleep 5
 			echo
 		fi
 	else
-		redMessage "Could not detect in Github the last Manager Script Version!"
+		redMessage "Error checking for latetst manager script version on github!"
 		FINISHED
 	fi
 }
 
 UPDATER_CHECK() {
-	yellowMessage "Checking for the latest Updater Script"
+	yellowMessage "Checking for latest Updater Script"
 	LATEST_UPDATER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
 	sleep 3
 
 	if [ "$LATEST_UPDATER_VERSION" != "" ]; then
 		if [ "`printf "${LATEST_UPDATER_VERSION}\n${CURRENT_UPDATER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_UPDATER_VERSION" ]; then
-			redMessage "A old Update Script is found and will Updated"
+			redMessage "Your updater script is outdated and will be updated automatically. Please be patient..."
 			rm -rf /root/ark_mod_updater.sh
 			sleep 3
 			echo
-			yellowMessage "Downloading the last stable Updater Script from Github"
+			yellowMessage "Downloading the latest stable Updater Script from Github"
 			yellowMessage "Please wait..."
 			wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
 			tar zxf /tmp/"$LATEST_UPDATER_VERSION".tar.gz -C /tmp/
@@ -125,13 +125,13 @@ UPDATER_CHECK() {
 				sleep 5
 				echo
 			else
-				redMessage "Updater Script downloading failed"
-				redMessage "Please download the last release under https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases"
+				redMessage "Downloading updater script failed"
+				redMessage "Please download the last release from https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases"
 				redMessage "Installation canceled!"
 				FINISHED
 			fi
 		else
-			greenMessage "You are using the Up-to-Date Updater Version ${CURRENT_UPDATER_VERSION}"
+			greenMessage "You are using Up-to-Date Updater Version ${CURRENT_UPDATER_VERSION}"
 			sleep 5
 			echo
 		fi
@@ -151,7 +151,7 @@ UPDATER_CHECK() {
 		fi
 	else
 		echo
-		redMessage "Could not detect last Updater Version!"
+		redMessage "Could not detect latest Updater Version!"
 		FINISHED
 	fi
 }
@@ -178,7 +178,7 @@ USER_CHECK() {
 			su "$MASTERSERVER_USER" -c "mkdir -p "$MOD_LAST_VERSION""
 		fi
 	else
-		redMessage 'Variable "MASTERSERVER_USER" are empty!'
+		redMessage 'Variable "MASTERSERVER_USER" is empty!'
 		FINISHED
 	fi
 }
@@ -236,7 +236,7 @@ INSTALL() {
 	unset ARK_MOD_ID
 	touch "$TMP_PATH"/ark_mod_updater_status
 	tput cnorm
-	printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
+	printf "Please enter your ModID and press Return: "; read ARK_MOD_ID
 	tput civis
 
 	if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{9}$ ]]; then
@@ -274,7 +274,7 @@ INSTALL_ALL() {
 		done
 
 		echo; echo; tput cnorm
-		printf "Want to install all Mod IDs [Y/N]?: "; read ANSWER
+		printf "Do you want to install all Mod IDs [Y/N]?: "; read ANSWER
 		tput civis
 
 		case $ANSWER in
@@ -298,7 +298,7 @@ INSTALL_ALL() {
 		touch "$TMP_PATH"/ark_mod_updater_status
 		tput cnorm
 		whiteMessage "Example: 525507438 479295136 632091170"
-		printf "Please enter your ModIDs with blank sign and press Enter: "; read ARK_MOD_ID
+		printf "Please enter your ModIDs with blank sign and press Return: "; read ARK_MOD_ID
 		tput civis
 		echo
 		yellowMessage "Please wait..."
@@ -312,7 +312,7 @@ INSTALL_ALL() {
 			ARK_MOD_ID=`cat "$TMP_PATH"/ark_mod_appid_check.log`
 			INSTALL_CHECK
 		else
-			redMessage "All Mod IDs are already installed!"
+			redMessage "All known Mod IDs are already installed!"
 		fi
 		FINISHED
 	fi
@@ -325,7 +325,7 @@ UPDATE() {
 	if [ ! -f "$TMP_PATH"/ark_mod_updater_status ]; then
 		touch "$TMP_PATH"/ark_mod_updater_status
 	else
-		redMessage "Update in work... aborted!"
+		redMessage "Another update is already running... aborting!"
 		echo
 		FINISHED
 	fi
@@ -362,7 +362,7 @@ UPDATE() {
 	fi
 	if ! cmp -s "$MOD_LOG" "$MOD_BACKUP_LOG"; then
 		echo; echo
-		redMessage "Error in Logfile found!"
+		redMessage "Found an error in logfile!"
 		redMessage "Logfile Backup restored"
 		cp "$MOD_BACKUP_LOG" "$MOD_LOG"
 	fi
@@ -380,24 +380,24 @@ UPDATER_INSTALL() {
 		if [ -f /etc/cron.d/ark_mod_updater ]; then
 			systemctl daemon-reload >/dev/null 2>&1
 			service cron restart >/dev/null 2>&1
-			greenMessage "Updater Cron successfully installed."
+			greenMessage "Updater Cron has been successfully installed."
 			sleep 3
 			echo
 		else
-			redMessage "Updater Cron installation failed!"
+			redMessage "Updater Cron installation has failed!"
 			FINISHED
 		fi
 	else
-		greenMessage "Updater Cron already installed."
+		greenMessage "Updater Cron has already been installed."
 		sleep 3
 		echo
 	fi
 
 	if [ -f /root/ark_mod_updater.sh ] && [ -f /etc/cron.d/ark_mod_updater ]; then
 		screen -AmdS ARK_Updater "/root/ark_mod_updater.sh"
-		greenMessage "Updater successfully installed and run for the first time in background."
+		greenMessage "Updater has been successfully installed and ran for the first time in background."
 	else
-		redMessage "Updater installation failed!"
+		redMessage "Updater installation has failed!"
 		redMessage "Cron and Updater will be removed!"
 		sleep 3
 		UPDATER_UNINSTALL
@@ -407,7 +407,7 @@ UPDATER_INSTALL() {
 
 UPDATER_UNINSTALL() {
 	echo; echo; tput cnorm
-	printf "Really uninstall Updater [Y/N]?: "; read ANSWER
+	printf "Do you really want to uninstall updater cron [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -423,30 +423,30 @@ UPDATER_UNINSTALL() {
 
 		if [ ! -f /etc/cron.d/ark_mod_updater ]; then
 			systemctl daemon-reload >/dev/null 2>&1 && service cron restart >/dev/null 2>&1
-			greenMessage "Updater Cron successfully uninstalled."
+			greenMessage "Updater Cron has been successfully uninstalled."
 		else
-			redMessage "Updater Cron uninstalling failed!"
-			redMessage 'Delete "ark_mod_updater" in "/etc/cron.d/" by Hand.'
+			redMessage "Updater Cron uninstall has failed!"
+			redMessage 'Delete "ark_mod_updater" in "/etc/cron.d/" mannually.'
 			echo
 		fi
 	else
-		redMessage 'No Updater Cron in "/etc/cron.d/" found!'
+		redMessage 'No Updater Cron has been found in "/etc/cron.d/"!'
 	fi
 
 	if [ -f /root/ark_mod_updater.sh ]; then
 		rm -rf /root/ark_mod_updater.sh
 
 		if [ ! -f /root/ark_mod_updater.sh ]; then
-			greenMessage "Updater successfully uninstalled."
+			greenMessage "Updater has been successfully uninstalled."
 			FINISHED
 		else
-			redMessage "Updater uninstalling failed!"
-			redMessage 'Delete "ark_mod_updater.sh" in "/root/" by Hand.'
+			redMessage "Updater uninstall has failed!"
+			redMessage 'Delete "ark_mod_updater.sh" in "/root/" manually.'
 			FINISHED
 		fi
 	else
 		redMessage 'No Updater in "/root/" found!'
-		redMessage "Uninstalling canceled."
+		redMessage "uninstall canceled."
 		FINISHED
 	fi
 }
@@ -486,7 +486,7 @@ UNINSTALL() {
 					rm -rf "$MOD_NO_UPDATE_LOG" >/dev/null 2>&1
 				fi
 				echo
-				greenMessage "ModID $ARK_MOD_ID is successfully uninstalled."
+				greenMessage "ModID $ARK_MOD_ID has been successfully uninstalled."
 				echo
 				local CHECK_LOG=$(cat "$MOD_LOG")
 				if [ "$CHECK_LOG" != "" ]; then
@@ -500,7 +500,7 @@ UNINSTALL() {
 			else
 				echo
 				redMessage "Unknown ARK MOD ID!"
-				redMessage "Uninstalling canceled."
+				redMessage "uninstall canceled."
 				FINISHED
 			fi
 		else
@@ -515,7 +515,7 @@ UNINSTALL() {
 
 UNINSTALL_ALL() {
 	echo; echo; tput cnorm
-	printf "Really uninstall all Mod IDs [Y/N]?: "; read ANSWER
+	printf "do you really want to uninstall all Mod IDs [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -543,12 +543,12 @@ UNINSTALL_ALL() {
 		fi
 
 		echo; echo
-		greenMessage "all Mods successfully uninstalled."
+		greenMessage "all Mods have been successfully uninstalled."
 		FINISHED
 	else
 		echo; echo
 		redMessage "File $LOG_PATH/ark_mod_id.log not found!"
-		redMessage "Delete all exist ARK Mod Folder by Hand."
+		redMessage "Delete all existing ARK Mod folders manually."
 		FINISHED
 	fi
 }
@@ -611,7 +611,7 @@ INSTALL_CHECK() {
 			fi
 		else
 			echo "$MODID" >> "$MOD_LOG"
-			redMessage "Steam Community are currently not available or ModID $MODID not known!"
+			redMessage "Steam Community is currently not available or ModID $MODID unknown!"
 			redMessage "Please try again later."
 		fi
 	done
@@ -834,7 +834,7 @@ DATABASE_CONNECTION() {
 				redMessage "Database Server not Online!"
 				if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALL_ALL" ]; then
 					echo
-					yellowMessage "You must self Import the XML Files into your Webinterface"
+					yellowMessage "You have to import the generated XML files manually into Easy-Wi"
 					CREATE_WI_IMPORT_FILE
 				fi
 			fi
@@ -873,7 +873,7 @@ DATABASE_CONNECTION() {
 						redMessage "Database entry for Mod $ARK_MOD_NAME_NORMAL failed!"
 						if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 							echo
-							yellowMessage "You must self Import the XML Files into your Webinterface"
+							yellowMessage "You have to import the generated XML files manually into Easy-Wi"
 							CREATE_WI_IMPORT_FILE
 						fi
 						echo; echo
@@ -883,7 +883,7 @@ DATABASE_CONNECTION() {
 					redMessage "Database Login failure!"
 					if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 						echo
-						yellowMessage "You must self Import the XML Files into your Webinterface"
+						yellowMessage "You have to import the generated XML files manually into Easy-Wi"
 						CREATE_WI_IMPORT_FILE
 					elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
 						echo
@@ -893,7 +893,7 @@ DATABASE_CONNECTION() {
 			n|N)
 				if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 					echo; echo
-					yellowMessage "You must self Import the XML Files into your Webinterface"
+					yellowMessage "You have to import the generated XML files manually into Easy-Wi"
 					CREATE_WI_IMPORT_FILE
 				elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
 					echo; echo
@@ -956,7 +956,7 @@ EXT_DATABASE_CONNECTION() {
 					redMessage "Database entry for Mod $ARK_MOD_NAME_NORMAL failed!"
 					if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 						echo
-						yellowMessage "You must self Import the XML Files into your Webinterface"
+						yellowMessage "You have to import the generated XML files manually into Easy-Wi"
 						CREATE_WI_IMPORT_FILE
 					elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
 						echo
@@ -969,11 +969,11 @@ EXT_DATABASE_CONNECTION() {
 				redMessage "Database Login failure!"
 				if [ "$MODE" == "INSTALL" -o "$MODE" == "INSTALL_ALL" ]; then
 					echo
-					yellowMessage "You must self Import the XML Files into your Webinterface"
+					yellowMessage "You have to import the generated XML files manually into Easy-Wi"
 					CREATE_WI_IMPORT_FILE
 				elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
 					echo
-					yellowMessage "Remove the Mod over the Webpanel \"Game Server->Addons\""
+					yellowMessage "Remove the Mod in Easy-Wi at \"Game Server->Addons\""
 				fi
 			fi;;
 		n|N)
@@ -984,7 +984,7 @@ EXT_DATABASE_CONNECTION() {
 			fi
 			if [ "$MODE" = "INSTALL" -o "$MODE" = "INSTALL_ALL" ] && [ "$DATABASE_CONNECTED" != "No" ]; then
 				echo
-				yellowMessage "You must self Import the XML Files into your Webinterface"
+				yellowMessage "You have to import the generated XML files manually into Easy-Wi"
 				CREATE_WI_IMPORT_FILE
 			fi;;
 		*)
@@ -1012,13 +1012,13 @@ CREATE_WI_IMPORT_FILE() {
 
 	chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$EASYWI_XML_FILES" >/dev/null 2>&1
 	echo
-	cyanMessage "Easy-WI XML Import Files under $EASYWI_XML_FILES/ created."
-	cyanMessage 'Import Files in the Webinterface under "Gameserver -> Addons -> Add Gameserver Addons".'
+	cyanMessage "Easy-WI XML Import Files under created at $EASYWI_XML_FILES/"
+	cyanMessage 'You have to import the generated XML files manually into Easy-Wi at "Gameserver -> Addons -> Add Gameserver Addons".'
 }
 
 QUESTION1() {
 	echo; echo;	tput cnorm
-	printf "additional ModID installing [Y/N]?: "; read ANSWER
+	printf "Do you want to install additional ModIDs [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -1032,7 +1032,7 @@ QUESTION1() {
 
 QUESTION2() {
 	echo; echo; tput cnorm
-	printf "Want to install a ModID [Y/N]?: "; read ANSWER
+	printf "Do you want to install a ModID [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -1046,7 +1046,7 @@ QUESTION2() {
 
 QUESTION3() {
 	echo; echo;	tput cnorm
-	printf "additional ModID uninstalling [Y/N]?: "; read ANSWER
+	printf "Do you want to uninstall an additional ModID [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -1065,7 +1065,7 @@ QUESTION4() {
 	cyanonelineMessage "ARK Mod ID:   "; whiteMessage "$ARK_MOD_ID"
 	cyanonelineMessage "ARK Mod Name: "; whiteMessage "$ARK_MOD_NAME_NORMAL"
 	echo; tput cnorm
-	printf "Are the details correct? [Y/N]?: "; read ANSWER
+	printf "Are these details correct? [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -1079,7 +1079,7 @@ QUESTION4() {
 
 QUESTION5() {
 	echo; echo;	tput cnorm
-	printf "Installing Mod Autoupdater [Y/N]?: "; read ANSWER
+	printf "Install Mod Autoupdater [Y/N]?: "; read ANSWER
 	tput civis
 	case $ANSWER in
 		y|Y|j|J)
@@ -1160,7 +1160,7 @@ FINISHED() {
 
 ERROR() {
 	echo; echo
-	redMessage "It was not a valid input detected!"
+	redMessage "Invalid input detected!"
 	redMessage "Please wait..."
 	sleep 3
 }
@@ -1218,7 +1218,7 @@ if [ $? != "0" ]; then
 	if [ $? != "0" ]; then
 		echo
 		redMessage "Still not root, aborting!"
-		redMessage 'You must User "root", to run this Script!'
+		redMessage 'You have to be "root", to run this Script!'
 		echo
 		echo
 		exit 1
