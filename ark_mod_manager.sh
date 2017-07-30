@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Debug Mode
-DEBUG="OFF"
+DEBUG="ON"
 
 # Easy-WI Masterserver User
 MASTERSERVER_USER="easy-wi"
@@ -25,7 +25,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ##############################################
 
 #If you relocated your game folders you can change the base location here
-EWI_BASE_PATH="/home"
+EWI_BASE_PATH="var"
 
 
 ##############################################
@@ -34,7 +34,7 @@ EWI_BASE_PATH="/home"
 
 CURRENT_MANAGER_VERSION="2.5.9"
 ARK_APP_ID="346110"
-MASTER_PATH="$EWI_BASE_PATH/$MASTERSERVER_USER"
+MASTER_PATH="/$EWI_BASE_PATH/$MASTERSERVER_USER"
 STEAM_CMD_PATH="$MASTER_PATH/masterserver/steamCMD/steamcmd.sh"
 ARK_MOD_PATH="$MASTER_PATH/masteraddons"
 EASYWI_XML_FILES="$MASTER_PATH/easywi-xml-files"
@@ -47,6 +47,7 @@ TMP_PATH="$MASTER_PATH/temp"
 CURRENT_UPDATER_VERSION="$(cat /root/ark_mod_updater.sh | grep CURRENT_UPDATER_VERSION= | grep -o -E '[0-9].[0-9]')"
 CURRENT_UPDATER_USER="$(cat /root/ark_mod_updater.sh | grep MASTERSERVER_USER= | cut -c 20- | tr -d '"')"
 CURRENT_UPDATER_EMAIL="$(cat /root/ark_mod_updater.sh | grep EMAIL_TO= | cut -c 10- | tr -d '"')"
+CURRENT_UPDATER_HOMEPATH="$(cat /root/ark_mod_updater.sh | grep EWI_BASE_PATH= | cut -c 16- | tr -d '"')"
 DEAD_MOD="deprec|outdated|brocken|not-supported|mod-is-dead|no-longer-|old|discontinued"
 
 PRE_CHECK() {
@@ -123,11 +124,6 @@ UPDATER_CHECK() {
 
 			if [ -f /root/ark_mod_updater.sh ]; then
 				chmod 700 /root/ark_mod_updater.sh >/dev/null 2>&1
-				sed -i "s/unknown_user/$MASTERSERVER_USER/" /root/ark_mod_updater.sh
-
-				if [ "$EMAIL_TO" != "" ]; then
-					sed -i "s/EMAIL_TO=/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
-				fi
 				sleep 3
 				greenMessage "Done"
 				sleep 5
@@ -156,6 +152,13 @@ UPDATER_CHECK() {
 			sed -i "s/EMAIL_TO=\"\"/EMAIL_TO=\"$EMAIL_TO\"/" /root/ark_mod_updater.sh
 		elif [ "$CURRENT_UPDATER_EMAIL" != "$EMAIL_TO" ]; then
 			sed -i "s/$CURRENT_UPDATER_EMAIL/$EMAIL_TO/" /root/ark_mod_updater.sh
+		fi
+
+		# Homepath
+		if [ "$CURRENT_UPDATER_HOMEPATH" == "" ]; then
+			sed -i "s/EWI_BASE_PATH=\"\"/EWI_BASE_PATH=\"$EWI_BASE_PATH\"/" /root/ark_mod_updater.sh
+		elif [ "$CURRENT_UPDATER_HOMEPATH" != "$EWI_BASE_PATH" ]; then
+			sed -i "s/EWI_BASE_PATH=\"$CURRENT_UPDATER_HOMEPATH\"/EWI_BASE_PATH=\"$EWI_BASE_PATH\"/" /root/ark_mod_updater.sh
 		fi
 	else
 		echo
