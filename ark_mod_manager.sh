@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Debug Mode
-DEBUG="ON"
+DEBUG="OFF"
 
 # Easy-WI Masterserver User
 MASTERSERVER_USER="easy-wi"
@@ -25,7 +25,7 @@ ARK_MOD_ID=("525507438" "479295136" "632091170" "485964701" "558079412")
 ##############################################
 
 #If you relocated your game folders you can change the base location here
-EWI_BASE_PATH="var"
+EWI_BASE_PATH="home"
 
 
 ##############################################
