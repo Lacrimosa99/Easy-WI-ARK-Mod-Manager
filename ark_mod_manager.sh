@@ -88,7 +88,7 @@ VERSION_CHECK() {
 
 	if [ "$LATEST_MANAGER_VERSION" != "" ]; then
 		if [ "`printf "${LATEST_MANAGER_VERSION}\n${CURRENT_MANAGER_VERSION}" | sort -V | tail -n 1`" != "$CURRENT_MANAGER_VERSION" ]; then
-			redMessage "You are using an old Manager Script Version ${CURRENT_MANAGER_VERSION}."
+			redMessage "You are using an old manager script version ${CURRENT_MANAGER_VERSION}."
 			redMessage "Please upgrade to current version ${LATEST_MANAGER_VERSION} and try again."
 			redMessage "Download Link: https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Manager/releases"
 			FINISHED
@@ -104,7 +104,7 @@ VERSION_CHECK() {
 }
 
 UPDATER_CHECK() {
-	yellowMessage "Checking for latest Updater Script"
+	yellowMessage "Checking for latest updater script"
 	LATEST_UPDATER_VERSION=`wget -q --timeout=60 -O - https://api.github.com/repos/Lacrimosa99/Easy-WI-ARK-Mod-Updater/releases/latest | grep -Po '(?<="tag_name": ")([0-9]\.[0-9])'`
 	sleep 3
 
@@ -114,7 +114,7 @@ UPDATER_CHECK() {
 			rm -rf /root/ark_mod_updater.sh
 			sleep 3
 			echo
-			yellowMessage "Downloading the latest stable Updater Script from Github"
+			yellowMessage "Downloading the latest stable updater script from github"
 			yellowMessage "Please wait..."
 			wget -q --timeout=60 -P /tmp/ https://github.com/Lacrimosa99/Easy-WI-ARK-Mod-Updater/archive/"$LATEST_UPDATER_VERSION".tar.gz
 			tar zxf /tmp/"$LATEST_UPDATER_VERSION".tar.gz -C /tmp/
@@ -135,7 +135,7 @@ UPDATER_CHECK() {
 				FINISHED
 			fi
 		else
-			greenMessage "You are using Up-to-Date Updater Version ${CURRENT_UPDATER_VERSION}"
+			greenMessage "You are using up-to-date updater version ${CURRENT_UPDATER_VERSION}"
 			sleep 5
 			echo
 		fi
@@ -162,7 +162,7 @@ UPDATER_CHECK() {
 		fi
 	else
 		echo
-		redMessage "Could not detect latest Updater Version!"
+		redMessage "Could not detect latest updater version!"
 		FINISHED
 	fi
 }
@@ -173,11 +173,11 @@ USER_CHECK() {
 		USER_CHECK=`cut -d: -f6,7 /etc/passwd | grep "$MASTERSERVER_USER" | head -n1`
 		if [ "$USER_CHECK" != "$MASTER_PATH:/bin/bash" -a "$USER_CHECK" != "$MASTER_PATH/:/bin/bash" ]; then
 			redMessage "User $MASTERSERVER_USER not found or wrong shell rights!"
-			redMessage "Please check the Masteruser inside this Script or the User Shell rights."
+			redMessage "Please check the masteruser inside this script or the user shell rights."
 			FINISHED
 		fi
 		if [ ! -d "$ARK_MOD_PATH" ]; then
-			redMessage "Masteraddons Directory not found!"
+			redMessage "Masteraddons directory not found!"
 			FINISHED
 		fi
 		if [ ! -f "$STEAM_CMD_PATH" ]; then
@@ -250,7 +250,7 @@ INSTALL() {
 	printf "Please enter your ModID and press Return: "; read ARK_MOD_ID
 	tput civis
 
-	if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{9}$ ]]; then
+	if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{10}$ ]]; then
 		QUESTION4
 		if [ ! -d "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" ]; then
 			INSTALL_CHECK
@@ -478,7 +478,7 @@ UNINSTALL() {
 		printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
 		tput civis
 
-		if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{9}$ ]]; then
+		if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{10}$ ]]; then
 			local UNINSTALL_TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID")
 			local UNINSTALL_TMP_NAME2=$(if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID"; fi)
 			local UNINSTALL_TMP_PATH=$(ls "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID")
@@ -811,10 +811,7 @@ MOD_DATABASE_STRING() {
 
 		echo "UPDATE \`addons\` SET \`menudescription\` = 'AppID: $MODID - $ARK_MOD_NAME_NORMAL' WHERE \`addons\`.\`id\` = '$DATABASE_MOD_ID';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
 		DATABASE_CONNECTION
-	elif [ "$MODE" == "UNINSTALL" ]; then
-		echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
-		DATABASE_CONNECTION
-	elif [ "$MODE" == "UNINSTALL_ALL" ]; then
+	elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
 		echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
 		DATABASE_CONNECTION
 	fi
