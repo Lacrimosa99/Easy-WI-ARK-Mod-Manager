@@ -186,7 +186,7 @@ USER_CHECK() {
 		fi
 
 		if [ ! -d "$MOD_LAST_VERSION" ]; then
-			su "$MASTERSERVER_USER" -c "mkdir -p "$MOD_LAST_VERSION""
+			su "$MASTERSERVER_USER" -c "mkdir -p $MOD_LAST_VERSION"
 		fi
 	else
 		redMessage 'Variable "MASTERSERVER_USER" is empty!'
@@ -262,7 +262,7 @@ INSTALL() {
 			QUESTION1
 		else
 			echo
-			redMessage "Mod "$ARK_MOD_NAME_NORMAL" is already installed."
+			redMessage "Mod $ARK_MOD_NAME_NORMAL is already installed."
 			redMessage "Installation canceled!"
 			QUESTION1
 		fi
@@ -607,7 +607,7 @@ INSTALL_CHECK() {
 					fi
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$ARK_MOD_PATH"/ark_"$MODID" >/dev/null 2>&1
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$LOG_PATH"/* >/dev/null 2>&1
-					echo "$ARK_LAST_CHANGES_DATE" > ""$MOD_LAST_VERSION"/ark_mod_id_"$MODID".txt"
+					echo "$ARK_LAST_CHANGES_DATE" > "$MOD_LAST_VERSION/ark_mod_id_$MODID.txt"
 					chown -cR "$MASTERSERVER_USER":"$MASTERSERVER_USER" "$MOD_LAST_VERSION" >/dev/null 2>&1
 					MOD_DATABASE_STRING
 					echo
@@ -1116,7 +1116,7 @@ QUESTION6() {
 	case $ANSWER in
 		y|Y|j|J)
 			sed -i "/$MODID/d" "$MOD_BACKUP_LOG" >/dev/null 2>&1
-			CHECK_ID="cat "$MOD_NO_UPDATE_LOG" | grep "$MODID""
+			CHECK_ID="cat $MOD_NO_UPDATE_LOG | grep $MODID"
 			if [ "$CHECK_ID" = "" ]; then
 				echo "$MODID" >> "$MOD_NO_UPDATE_LOG"
 			fi;;
