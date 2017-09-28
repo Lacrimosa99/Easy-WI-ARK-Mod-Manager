@@ -821,10 +821,10 @@ DATABASE_CONNECTION() {
 	DATABASE_CONFIG_PATH=$(updatedb; locate /stuff/config.php)
 	if [ -f "$DATABASE_CONFIG_PATH" ]; then
 		DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
-		DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'host' | awk '{print $3}' | tr -d "\r';")
-		DATABASE_NAME=$(echo "$DATABASE_TMP" | grep 'db' | awk '{print $3}' | tr -d "\r';")
-		DATABASE_USER=$(echo "$DATABASE_TMP" | grep 'user' | awk '{print $3}' | tr -d "\r';")
-		DATABASE_PW=$(echo "$DATABASE_TMP" | grep 'pwd' | awk '{print $3}' | tr -d "\r';")
+		DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'host' | head -n1 | awk '{print $3}' | tr -d "\r';")
+		DATABASE_NAME=$(echo "$DATABASE_TMP" | grep 'db' | head -n1 | awk '{print $3}' | tr -d "\r';")
+		DATABASE_USER=$(echo "$DATABASE_TMP" | grep 'user' | head -n1 | awk '{print $3}' | tr -d "\r';")
+		DATABASE_PW=$(echo "$DATABASE_TMP" | grep 'pwd' | head -n1 | awk '{print $3}' | tr -d "\r';")
 
 		if [ ! -f /root/ark_mod_updater_db.conf ]; then
 			echo "Host: $DATABASE_HOST" > /root/ark_mod_updater_db.conf
