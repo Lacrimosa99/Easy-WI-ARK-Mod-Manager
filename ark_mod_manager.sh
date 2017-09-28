@@ -250,7 +250,7 @@ INSTALL() {
 	printf "Please enter your ModID and press Return: "; read ARK_MOD_ID
 	tput civis
 
-	if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{10}$ ]]; then
+	if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{,10}$ ]]; then
 		QUESTION4
 		if [ ! -d "$ARK_MOD_PATH"/ark_"$ARK_MOD_ID" ]; then
 			INSTALL_CHECK
@@ -478,7 +478,7 @@ UNINSTALL() {
 		printf "Please enter your ModID and press Enter: "; read ARK_MOD_ID
 		tput civis
 
-		if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{10}$ ]]; then
+		if [ "$ARK_MOD_ID" != "" ] && [[ "$ARK_MOD_ID" =~ ^[0-9]{,10}$ ]]; then
 			local UNINSTALL_TMP_NAME=$(cat "$MOD_LOG" | grep "$ARK_MOD_ID")
 			local UNINSTALL_TMP_NAME2=$(if [ -f "$MOD_NO_UPDATE_LOG" ]; then cat "$MOD_NO_UPDATE_LOG" | grep "$ARK_MOD_ID"; fi)
 			local UNINSTALL_TMP_PATH=$(ls "$ARK_MOD_PATH"/ | grep ark_"$ARK_MOD_ID")
