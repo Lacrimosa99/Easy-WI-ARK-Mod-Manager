@@ -690,7 +690,7 @@ MOD_DOWNLOAD() {
 }
 
 DECOMPRESS() {
-	mod_appid=$ARK_APP_ID
+	mod_appid="$ARK_APP_ID"
 	mod_branch=Windows
 	modid=$MODID
 
@@ -812,7 +812,7 @@ MOD_DATABASE_STRING() {
 		echo "UPDATE \`addons\` SET \`menudescription\` = 'AppID: $MODID - $ARK_MOD_NAME_NORMAL' WHERE \`addons\`.\`id\` = '$DATABASE_MOD_ID';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
 		DATABASE_CONNECTION
 	elif [ "$MODE" == "UNINSTALL" -o "$MODE" == "UNINSTALL_ALL" ]; then
-		echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_"$DELETE"';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
+		echo "DELETE FROM \`addons\` WHERE \`addon\` = 'ark_$DELETE';" > $TMP_PATH/ARK_MOD_MANAGER_SQL.sql
 		DATABASE_CONNECTION
 	fi
 }
