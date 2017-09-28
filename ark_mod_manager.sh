@@ -926,15 +926,24 @@ EXT_DATABASE_CONNECTION() {
 
 	case $ANSWER in
 		j|J|y|Y)
-			if [ "$DATABASE_CONNECTED" != "Yes" ]; then
-				echo
-				cyanMessage "Please enter the following Data"
-				echo; tput cnorm
-				printf "ext. Database IP: "; read DATABASE_HOST
-				printf "ext. Database DB Name: "; read DATABASE_NAME
-				printf "ext. Database User Name: "; read DATABASE_USER
-				printf "ext. Database Password: "; read DATABASE_PW
-				tput civis
+			if [ ! -f /root/ark_mod_updater_db.conf ]; then
+				if [ "$DATABASE_CONNECTED" != "Yes" ]; then
+					echo
+					cyanMessage "Please enter the following Data"
+					echo; tput cnorm
+					printf "ext. Database IP: "; read DATABASE_HOST
+					printf "ext. Database DB Name: "; read DATABASE_NAME
+					printf "ext. Database User Name: "; read DATABASE_USER
+					printf "ext. Database Password: "; read DATABASE_PW
+					tput civis
+				fi
+			else
+				DATABASE_CONFIG_PATH="/root/ark_mod_updater_db.conf"
+				DATABASE_TMP=$(cat $DATABASE_CONFIG_PATH)
+				DATABASE_HOST=$(echo "$DATABASE_TMP" | grep 'Host:' | head -n1 | awk '{print $2}' | tr -d "\r';")
+				DATABASE_NAME=$(echo "$DATABASE_TMP" | grep 'Name:' | head -n1 | awk '{print $2}' | tr -d "\r';")
+				DATABASE_USER=$(echo "$DATABASE_TMP" | grep 'User:' | head -n1 | awk '{print $2}' | tr -d "\r';")
+				DATABASE_PW=$(echo "$DATABASE_TMP" | grep 'PW:' | head -n1 | awk '{print $2}' | tr -d "\r';")
 			fi
 
 			MYSQL_CONNECT="mysql -h $DATABASE_HOST -u $DATABASE_USER -p$DATABASE_PW -D $DATABASE_NAME"
