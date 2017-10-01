@@ -23,7 +23,7 @@ Maps are currently not supported!<br>
 
 ---
 
-<h4>Which Games are available in Universal Mod Manager?</h4>
+<h4>Which Games are available in ARK Mod Manager?</h4>
 
 - ARK: Survival Evolved<br>
 - ARK: Survival Of The Fittest<br>
