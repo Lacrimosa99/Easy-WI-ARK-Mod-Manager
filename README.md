@@ -18,7 +18,7 @@ Maps are currently not supported!<br>
 - wget<br>
 - sudo<br>
 - locate<br>
-- Easy-WI Database<br>
+- Easy-WI Database (local or remote Database)<br>
 - E-Mail Server for AutoUpdater (Optional)<br>
 
 ---
