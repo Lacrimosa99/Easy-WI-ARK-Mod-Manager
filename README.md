@@ -29,7 +29,6 @@ Maps are currently not supported!<br>
 - Counter-Strike: Source<br>
 - Counter-Strike: Global Offensive<br>
 - ARMA 3<br>
-<br>
 - more games on request<br>
 
 ---
