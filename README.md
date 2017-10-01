@@ -23,6 +23,17 @@ Maps are currently not supported!<br>
 
 ---
 
+<h4>Which Games are available in Universal Mod Manager?</h4>
+
+- ARK: Survival Evolved
+- Counter-Strike: Source
+- Counter-Strike: Global Offensive
+- ARMA 3
+
+- more games on request
+
+---
+
 <h4>Which functions are available in Universal Mod Manager?</h4>
 
 - Install a single Mod ID<br>
