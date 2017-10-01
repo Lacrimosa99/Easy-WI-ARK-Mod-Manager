@@ -1,6 +1,6 @@
-# Easy-WI Universal Mod / Content Manager
+# Easy-WI ARK Mod / Map Manager
 
-<h3>This is a Universal Mod / Content Manager for the www.Easy-WI.com Webinterface.</h3>
+<h3>This is a ARK Mod / Map Manager for the www.Easy-WI.com Webinterface.</h3>
 
 ---
 - Quality Code: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b3564e2410b3430e9097f71b0d853910)](https://www.codacy.com/app/Lacrimosa99/Easy-WI-ARK-Mod-Manager?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Lacrimosa99/Easy-WI-ARK-Mod-Manager&amp;utm_campaign=Badge_Grade)
@@ -26,10 +26,7 @@ Maps are currently not supported!<br>
 <h4>Which Games are available in Universal Mod Manager?</h4>
 
 - ARK: Survival Evolved<br>
-- Counter-Strike: Source<br>
-- Counter-Strike: Global Offensive<br>
-- ARMA 3<br>
-- more games on request<br>
+- ARK: Survival Of The Fittest<br>
 
 ---
 
@@ -47,18 +44,19 @@ Maps are currently not supported!<br>
 
 <h4>What it's to do?</h4>
 
-Download the Universal Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
+Download the ARK Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
 Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.<br>
 <br>
 Copy following Command in your Terminal (Putty or what ever):
 chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
+<br>
 Later can you run the ARK Manager Script by: ./ark_mod_manager.sh
 
 ---
 
 <h4>How works the Updater per Cronjob?</h4>
 
-Open the Universal Mod Manager (ark_mod_manager.sh) in your Terminal and use following Option "Install Updater Script + Cronjob".<br>
+Open the ARK Mod Manager (ark_mod_manager.sh) in your Terminal and use following Option "Install Updater Script + Cronjob".<br>
 You must nothing more do.. all required Commands and Scripts are automatically installed.<br>
 Every 2 Hour run the Updater Script and Update all installed Mods if required.<br>
 
