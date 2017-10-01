@@ -1,6 +1,6 @@
-# Easy-WI ARK Mod / Content Manager
+# Easy-WI Universal Mod / Content Manager
 
-<h3>This is a ARK Mod / Content Manager for the www.Easy-WI.com Webinterface.</h3>
+<h3>This is a Universal Mod / Content Manager for the www.Easy-WI.com Webinterface.</h3>
 
 ---
 - Quality Code: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b3564e2410b3430e9097f71b0d853910)](https://www.codacy.com/app/Lacrimosa99/Easy-WI-ARK-Mod-Manager?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Lacrimosa99/Easy-WI-ARK-Mod-Manager&amp;utm_campaign=Badge_Grade)
@@ -12,7 +12,7 @@
 Maps are currently not supported!<br>
 
 <h4>Requirements:</h4>
-- Debian >8 or Ubuntu >15.10 (tested)<br>
+- Debian >8 or Ubuntu >16.04 (tested)<br>
 - Root User<br>
 - curl<br>
 - wget<br>
@@ -23,22 +23,23 @@ Maps are currently not supported!<br>
 
 ---
 
-<h4>Which functions are available in Ark Mod Manager?</h4>
+<h4>Which functions are available in Universal Mod Manager?</h4>
 
-- Install a single ARK Mod ID<br>
-- Install predefined ARK Mods (IDs are inside the "ark_mod_manager.sh" Script)<br>
-- Update all installed ARK Mods IDs<br>
+- Install a single Mod ID<br>
+- Install multiple Mod IDs<br>
+- Update all installed Mods IDs<br>
 - Install Updater Script + Cronjob (for automatically Update)<br>
 - Uninstall Updater Script + Crontab<br>
-- Remove a single ARK Mod ID<br>
-- Remove all ARK Mod IDs<br>
+- Remove a single Mod ID<br>
+- Remove all Mod IDs<br>
 
 ---
 
 <h4>What it's to do?</h4>
 
-Download the Ark Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
+Download the Universal Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
 Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.<br>
+<br>
 Copy following Command in your Terminal (Putty or what ever):
 chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh
 Later can you run the ARK Manager Script by: ./ark_mod_manager.sh
@@ -47,7 +48,7 @@ Later can you run the ARK Manager Script by: ./ark_mod_manager.sh
 
 <h4>How works the Updater per Cronjob?</h4>
 
-Open the Ark Mod Manager (ark_mod_manager.sh) in your Terminal and use following Option "Install Updater Script + Cronjob".<br>
+Open the Universal Mod Manager (ark_mod_manager.sh) in your Terminal and use following Option "Install Updater Script + Cronjob".<br>
 You must nothing more do.. all required Commands and Scripts are automatically installed.<br>
 Every 2 Hour run the Updater Script and Update all installed Mods if required.<br>
 
