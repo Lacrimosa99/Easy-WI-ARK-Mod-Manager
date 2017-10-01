@@ -45,8 +45,7 @@ Maps are currently not supported!<br>
 <h4>What it's to do?</h4>
 
 Download the ARK Mod Manager (ark_mod_manager.sh) into your Root Directory.<br>
-Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.<br>
-<br>
+Edit inside the Script the Masteruser with your Masterserver Webinterface User, who's you in installing has given.<br><br>
 Copy following Command in your Terminal (Putty or what ever):
 chmod 700 ./ark_mod_manager.sh && ./ark_mod_manager.sh<br><br>
 Later can you run the ARK Manager Script by: ./ark_mod_manager.sh
