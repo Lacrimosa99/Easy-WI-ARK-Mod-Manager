@@ -30,7 +30,7 @@ Maps are currently not supported!<br>
 
 ---
 
-<h4>Which functions are available in Universal Mod Manager?</h4>
+<h4>Which functions are available in ARK Mod Manager?</h4>
 
 - Install a single Mod ID<br>
 - Install multiple Mod IDs<br>
@@ -55,7 +55,7 @@ Later can you run the ARK Manager Script by: ```./ark_mod_manager.sh```
 
 Open the ARK Mod Manager (ark_mod_manager.sh) in your Terminal and use following Option "Install Updater Script + Cronjob".<br>
 You must nothing more do.. all required Commands and Scripts are automatically installed.<br>
-Every 2 Hour run the Updater Script and Update all installed Mods if required.<br>
+Every Hour run the Updater Script and Update all installed Mods if required.<br>
 
 ---
 
