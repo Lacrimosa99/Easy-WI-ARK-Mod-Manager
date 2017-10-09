@@ -28,6 +28,7 @@ Maps are currently not supported!<br>
 - ARK: Survival Evolved<br>
 - ARK: Survival Of The Fittest<br>
 - ARMA3 (coming soon)<br>
+- Dark and Light (coming soon)<br>
 
 ---
 
