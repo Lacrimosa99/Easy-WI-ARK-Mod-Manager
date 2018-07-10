@@ -1189,7 +1189,7 @@ HEADER() {
 	cyanMessage "####        ARK - Mod / Content Manager        ####"
 	cyanMessage "####               Version: $CURRENT_MANAGER_VERSION              ####"
 	cyanMessage "####                    by                     ####"
-	cyanMessage "####                Lacrimosa99                ####"
+	cyanMessage "####        Lacrimosa99 @ Blackpanther         ####"
 	cyanMessage "####         www.Devil-Hunter-Clan.de          ####"
 	cyanMessage "####      www.Devil-Hunter-Multigaming.de      ####"
 	cyanMessage "###################################################"
